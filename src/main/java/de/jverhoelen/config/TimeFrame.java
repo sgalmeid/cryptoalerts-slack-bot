@@ -1,4 +1,4 @@
-package de.jverhoelen.notification;
+package de.jverhoelen.config;
 
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;

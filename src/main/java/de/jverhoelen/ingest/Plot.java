@@ -2,85 +2,85 @@ package de.jverhoelen.ingest;
 
 public class Plot {
 
-    private double last;
-    private double lowestAsk;
-    private double highestBid;
-    private double percentChange;
-    private double baseVolume;
-    private double quoteVolume;
-    private double isFrozen;
-    private double high24hr;
-    private double low24hr;
+    private Double last;
+//    private Double lowestAsk;
+//    private Double highestBid;
+//    private Double percentChange;
+//    private Double baseVolume;
+//    private Double quoteVolume;
+//    private Double isFrozen;
+//    private Double high24hr;
+//    private Double low24hr;
 
-    public double getLast() {
+    public Double getLast() {
         return last;
     }
 
-    public void setLast(double last) {
+    public void setLast(Double last) {
         this.last = last;
     }
 
-    public double getLowestAsk() {
-        return lowestAsk;
-    }
-
-    public void setLowestAsk(double lowestAsk) {
-        this.lowestAsk = lowestAsk;
-    }
-
-    public double getHighestBid() {
-        return highestBid;
-    }
-
-    public void setHighestBid(double highestBid) {
-        this.highestBid = highestBid;
-    }
-
-    public double getPercentChange() {
-        return percentChange;
-    }
-
-    public void setPercentChange(double percentChange) {
-        this.percentChange = percentChange;
-    }
-
-    public double getBaseVolume() {
-        return baseVolume;
-    }
-
-    public void setBaseVolume(double baseVolume) {
-        this.baseVolume = baseVolume;
-    }
-
-    public double getQuoteVolume() {
-        return quoteVolume;
-    }
-
-    public void setQuoteVolume(double quoteVolume) {
-        this.quoteVolume = quoteVolume;
-    }
-
-    public double getIsFrozen() {
-        return isFrozen;
-    }
-
-    public void setIsFrozen(double isFrozen) {
-        this.isFrozen = isFrozen;
-    }
-
-    public double getHigh24hr() {
-        return high24hr;
-    }
-
-    public void setHigh24hr(double high24hr) {
-        this.high24hr = high24hr;
-    }
-
-    public double getLow24hr() {
-        return low24hr;
-    }
-
-    public void setLow24hr(double low24hr) {
-        this.low24hr = low24hr;
-    }
+//    public Double getLowestAsk() {
+//        return lowestAsk;
+//    }
+//
+//    public void setLowestAsk(Double lowestAsk) {
+//        this.lowestAsk = lowestAsk;
+//    }
+//
+//    public Double getHighestBid() {
+//        return highestBid;
+//    }
+//
+//    public void setHighestBid(Double highestBid) {
+//        this.highestBid = highestBid;
+//    }
+//
+//    public Double getPercentChange() {
+//        return percentChange;
+//    }
+//
+//    public void setPercentChange(Double percentChange) {
+//        this.percentChange = percentChange;
+//    }
+//
+//    public Double getBaseVolume() {
+//        return baseVolume;
+//    }
+//
+//    public void setBaseVolume(Double baseVolume) {
+//        this.baseVolume = baseVolume;
+//    }
+//
+//    public Double getQuoteVolume() {
+//        return quoteVolume;
+//    }
+//
+//    public void setQuoteVolume(Double quoteVolume) {
+//        this.quoteVolume = quoteVolume;
+//    }
+//
+//    public Double getIsFrozen() {
+//        return isFrozen;
+//    }
+//
+//    public void setIsFrozen(Double isFrozen) {
+//        this.isFrozen = isFrozen;
+//    }
+//
+//    public Double getHigh24hr() {
+//        return high24hr;
+//    }
+//
+//    public void setHigh24hr(Double high24hr) {
+//        this.high24hr = high24hr;
+//    }
+//
+//    public Double getLow24hr() {
+//        return low24hr;
+//    }
+//
+//    public void setLow24hr(Double low24hr) {
+//        this.low24hr = low24hr;
+//    }
 }

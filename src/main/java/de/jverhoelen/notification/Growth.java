@@ -37,5 +37,7 @@ public class Growth {
         this.after = after;
     }
 
-
+    public String toString(String exchangeName) {
+        return percentage + " % (" + before + " " + exchangeName + " auf " + after + " " + exchangeName + ")";
+    }
 }

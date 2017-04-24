@@ -1,6 +1,9 @@
-package de.jverhoelen.notification;
+package de.jverhoelen.notification.currency;
 
+import de.jverhoelen.config.TimeFrame;
 import de.jverhoelen.ingest.CurrencyCombination;
+import de.jverhoelen.notification.Growth;
+import de.jverhoelen.notification.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,21 +28,27 @@ public class CurrencySlackService {
             LocalDateTime now = LocalDateTime.now();
 
             if (shouldBeAlertedFirstOrAgain(frame, lastSent, now)) {
-                String message = String.format(
-                        "*%s* ist in den letzten %s %s um *%s %%* gewachsen (%s --> %s)",
-                        combination.getCrypto().getFullName(),
-                        frame.getFrame(),
-                        frame.getUnit().toString(),
-                        growth.getPercentage(),
-                        growth.getBefore() + " " + combination.getExchange().name(),
-                        growth.getAfter() + " " + combination.getExchange().name()
-                );
-                String cryptoCurrencyName = combination.getCrypto().getFullName().trim().toLowerCase();
-
-                slackService.sendChannelMessage(cryptoCurrencyName, message);
-                notificationsSent.put(notificationSetting, now);
+                performCurrencyAlert(combination, growth, frame, notificationSetting, now);
             }
         }
+    }
+
+    private void performCurrencyAlert(CurrencyCombination combination, Growth growth, TimeFrame frame, CurrencyNotificationSetting notificationSetting, LocalDateTime now) {
+        String actionPerformed = growth.getPercentage() > 0 ? "⬆️" : "⬇️";
+        String message = String.format(
+                "*%s* hat sich in den letzten %s %s um *%s %%* verändert (%s): %s auf %s",
+                combination.getCrypto().getFullName(),
+                frame.getFrame(),
+                frame.getUnit().toString(),
+                growth.getPercentage(),
+                actionPerformed,
+                growth.getBefore() + " " + combination.getExchange().name(),
+                growth.getAfter() + " " + combination.getExchange().name()
+        );
+        String cryptoCurrencyName = combination.getCrypto().getFullName().trim().toLowerCase();
+
+        slackService.sendChannelMessage(cryptoCurrencyName, message);
+        notificationsSent.put(notificationSetting, now);
     }
 
     private boolean shouldBeAlertedFirstOrAgain(TimeFrame frame, LocalDateTime lastSent, LocalDateTime now) {

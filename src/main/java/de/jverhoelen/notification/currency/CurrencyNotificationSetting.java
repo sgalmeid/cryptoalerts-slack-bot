@@ -1,4 +1,4 @@
-package de.jverhoelen.notification;
+package de.jverhoelen.notification.currency;
 
 import de.jverhoelen.ingest.CurrencyCombination;
 
