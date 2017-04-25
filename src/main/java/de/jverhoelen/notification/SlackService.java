@@ -28,6 +28,10 @@ public class SlackService {
     @PostConstruct
     public void init() {
         this.session = createSession();
+        String environmentResult = isDevelopmentEnvironment()
+                ? "the DEV environment and no Slack notifications will be sent"
+                : "the PROD environment and Slack notifications will be sent as usual";
+        LOG.info("Environment {} was detected, so it is {}", environment, environmentResult);
     }
 
     private SlackSession createSession() {

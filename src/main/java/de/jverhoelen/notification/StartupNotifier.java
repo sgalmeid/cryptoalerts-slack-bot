@@ -13,6 +13,6 @@ public class StartupNotifier {
 
     @PostConstruct
     public void alertOnStartup() {
-        slackService.sendChannelMessage("general", "ACHTUNG! Alerting-Service wurde neugestartet. Alle Kursaufzeichnungen wurden vergessen und müssen neu gelernt werden. Solang werden Angaben nur den Zeitraum bis *jetzt* berücksichtigen können.");
+        //slackService.sendChannelMessage("general", "ACHTUNG! Alerting-Service wurde neugestartet. Alle Kursaufzeichnungen wurden vergessen und müssen neu gelernt werden. Solang werden Angaben nur den Zeitraum bis *jetzt* berücksichtigen können.");
     }
 }
