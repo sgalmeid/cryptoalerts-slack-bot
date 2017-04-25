@@ -1,6 +1,7 @@
 package de.jverhoelen.ingest;
 
 import de.jverhoelen.currency.CryptoCurrency;
+import de.jverhoelen.currency.CurrencyCombination;
 import de.jverhoelen.currency.ExchangeCurrency;
 
 import java.time.LocalDateTime;

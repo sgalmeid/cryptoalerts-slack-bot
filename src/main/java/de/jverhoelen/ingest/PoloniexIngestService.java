@@ -1,7 +1,7 @@
 package de.jverhoelen.ingest;
 
-import de.jverhoelen.config.Configuration;
-import de.jverhoelen.history.PlotHistory;
+import de.jverhoelen.config.ConfigurationService;
+import de.jverhoelen.config.TimeFrame;
 import de.jverhoelen.notification.Growth;
 import de.jverhoelen.notification.currency.CurrencySlackService;
 import org.slf4j.Logger;
@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -28,7 +29,7 @@ public class PoloniexIngestService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PoloniexIngestService.class);
 
     @Autowired
-    private Configuration config;
+    private ConfigurationService config;
 
     @Autowired
     private PlotHistory plotHistory;
@@ -44,13 +45,14 @@ public class PoloniexIngestService {
 
         if (entity.getStatusCode().is2xxSuccessful()) {
             Map<String, Plot> body = entity.getBody();
+            List<TimeFrame> timeFrames = config.getAllTimeFrames();
 
-            config.getInterestingCombinations().stream()
+            config.getAllCurrencyCombinations().stream()
                     .forEach(combi -> {
                         CurrencyPlot plot = new CurrencyPlot(combi, body.get(combi.toApiKey()));
                         plotHistory.put(plot);
 
-                        config.getTimeFrames().stream().forEach(timeFrame -> {
+                        timeFrames.stream().forEach(timeFrame -> {
                             Growth growth = plotHistory.getTotalGrowthPercentage(combi, timeFrame.getInMinutes());
                             slack.sendCurrencyNews(combi, growth, timeFrame);
                         });

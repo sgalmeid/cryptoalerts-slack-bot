@@ -20,6 +20,9 @@ public class SlackService {
     @Value("${slack.bot.token}")
     private String botAuthToken;
 
+    @Value("${environment}")
+    private String environment;
+
     private SlackSession session;
 
     @PostConstruct
@@ -43,7 +46,10 @@ public class SlackService {
 
         if (channel != null) {
             LOG.info("Send message {} to channel {}", message, channelName);
-            session.sendMessage(channel, message);
+
+            if (!isDevelopmentEnvironment()) {
+                session.sendMessage(channel, message);
+            }
         } else {
             throw new RuntimeException("Channel " + channelName + " was not recognized!");
         }
@@ -53,9 +59,15 @@ public class SlackService {
         SlackUser user = session.findUserByUserName(username);
 
         if (user != null) {
-            session.sendMessageToUser(user, message, null);
+            if (!isDevelopmentEnvironment()) {
+                session.sendMessageToUser(user, message, null);
+            }
         } else {
             throw new RuntimeException("User " + username + " was not recognized!");
         }
+    }
+
+    private boolean isDevelopmentEnvironment() {
+        return environment.toLowerCase().equals("dev");
     }
 }

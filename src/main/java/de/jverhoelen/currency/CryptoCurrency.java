@@ -8,7 +8,8 @@ public enum CryptoCurrency {
     ETH("Ethereum"),
     XRP("Ripple"),
     DASH("Dash"),
-    XMR("Monero");
+    XMR("Monero"),
+    GAME("GameCredits");
 
     private String fullName;
 

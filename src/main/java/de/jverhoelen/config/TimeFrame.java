@@ -1,23 +1,32 @@
 package de.jverhoelen.config;
 
+import javax.persistence.*;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 
+@Entity
 public class TimeFrame {
 
-    private TemporalUnit unit;
+    @Id
+    @GeneratedValue
+    private long id;
+
+    @Enumerated(value = EnumType.STRING)
+    private ChronoUnit unit;
     private int frame;
     private double lossThreshold;
     private double gainThreshold;
 
-    public TimeFrame(TemporalUnit unit, int frame, double lossThreshold, double gainThreshold) {
+    public TimeFrame(ChronoUnit unit, int frame, double lossThreshold, double gainThreshold) {
         this.unit = unit;
         this.frame = frame;
         this.lossThreshold = lossThreshold;
         this.gainThreshold = gainThreshold;
     }
 
-    public static TimeFrame of(TemporalUnit unit, int frame, double lossThreshold, double gainThreshold) {
+    public TimeFrame() {
+    }
+
+    public static TimeFrame of(ChronoUnit unit, int frame, double lossThreshold, double gainThreshold) {
         return new TimeFrame(unit, frame, lossThreshold, gainThreshold);
     }
 
@@ -45,6 +54,14 @@ public class TimeFrame {
         throw new RuntimeException("getInHours not implemented for " + unit.toString());
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public int getFrame() {
         return frame;
     }
@@ -53,11 +70,11 @@ public class TimeFrame {
         this.frame = frame;
     }
 
-    public TemporalUnit getUnit() {
+    public ChronoUnit getUnit() {
         return unit;
     }
 
-    public void setUnit(TemporalUnit unit) {
+    public void setUnit(ChronoUnit unit) {
         this.unit = unit;
     }
 
@@ -85,21 +102,13 @@ public class TimeFrame {
         TimeFrame timeFrame = (TimeFrame) o;
 
         if (frame != timeFrame.frame) return false;
-        if (Double.compare(timeFrame.lossThreshold, lossThreshold) != 0) return false;
-        if (Double.compare(timeFrame.gainThreshold, gainThreshold) != 0) return false;
-        return unit != null ? unit.equals(timeFrame.unit) : timeFrame.unit == null;
+        return unit == timeFrame.unit;
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = unit != null ? unit.hashCode() : 0;
+        int result = unit != null ? unit.hashCode() : 0;
         result = 31 * result + frame;
-        temp = Double.doubleToLongBits(lossThreshold);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(gainThreshold);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 }

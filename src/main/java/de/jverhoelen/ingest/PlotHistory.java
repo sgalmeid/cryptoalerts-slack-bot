@@ -1,7 +1,6 @@
-package de.jverhoelen.history;
+package de.jverhoelen.ingest;
 
-import de.jverhoelen.ingest.CurrencyCombination;
-import de.jverhoelen.ingest.CurrencyPlot;
+import de.jverhoelen.currency.CurrencyCombination;
 import de.jverhoelen.notification.Growth;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.slf4j.Logger;

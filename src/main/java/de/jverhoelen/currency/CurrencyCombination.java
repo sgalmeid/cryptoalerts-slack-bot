@@ -1,11 +1,18 @@
-package de.jverhoelen.ingest;
+package de.jverhoelen.currency;
 
-import de.jverhoelen.currency.CryptoCurrency;
-import de.jverhoelen.currency.ExchangeCurrency;
+import javax.persistence.*;
 
+@Entity
 public class CurrencyCombination {
 
+    @Id
+    @GeneratedValue
+    private long id;
+
+    @Enumerated(value = EnumType.STRING)
     private CryptoCurrency crypto;
+
+    @Enumerated(value = EnumType.STRING)
     private ExchangeCurrency exchange;
 
     public CurrencyCombination(CryptoCurrency crypto, ExchangeCurrency exchange) {
@@ -34,6 +41,14 @@ public class CurrencyCombination {
 
     public void setCrypto(CryptoCurrency crypto) {
         this.crypto = crypto;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     @Override

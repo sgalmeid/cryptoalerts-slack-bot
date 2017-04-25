@@ -2,8 +2,8 @@ package de.jverhoelen.notification.statistics;
 
 import de.jverhoelen.currency.CryptoCurrency;
 import de.jverhoelen.currency.ExchangeCurrency;
-import de.jverhoelen.history.PlotHistory;
-import de.jverhoelen.ingest.CurrencyCombination;
+import de.jverhoelen.ingest.PlotHistory;
+import de.jverhoelen.currency.CurrencyCombination;
 import de.jverhoelen.notification.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
