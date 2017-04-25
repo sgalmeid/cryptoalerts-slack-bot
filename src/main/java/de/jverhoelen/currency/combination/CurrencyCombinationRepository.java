@@ -1,6 +1,6 @@
-package de.jverhoelen.currency;
+package de.jverhoelen.currency.combination;
 
-import de.jverhoelen.util.Repository;
+import de.jverhoelen.util.repo.Repository;
 import org.springframework.stereotype.Component;
 
 @Component

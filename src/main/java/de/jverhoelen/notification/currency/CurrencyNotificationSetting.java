@@ -1,6 +1,6 @@
 package de.jverhoelen.notification.currency;
 
-import de.jverhoelen.currency.CurrencyCombination;
+import de.jverhoelen.currency.combination.CurrencyCombination;
 
 public class CurrencyNotificationSetting {
 

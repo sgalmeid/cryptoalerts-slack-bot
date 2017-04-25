@@ -1,9 +1,10 @@
 package de.jverhoelen.notification.statistics;
 
+import de.jverhoelen.config.ConfigurationService;
 import de.jverhoelen.currency.CryptoCurrency;
+import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.currency.ExchangeCurrency;
 import de.jverhoelen.ingest.PlotHistory;
-import de.jverhoelen.currency.CurrencyCombination;
 import de.jverhoelen.notification.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,19 +24,15 @@ public class StatisticsSlackService {
     @Autowired
     private PlotHistory history;
 
+    @Autowired
+    private ConfigurationService config;
+
     @Value("${statistics.interval.minutes}")
     private int intervalMinutes;
 
     @Scheduled(fixedRateString = "#{new Double(${statistics.interval.minutes} * 60 * 1000).intValue()}", initialDelay = 180000)
     public void sendRegularStatistics() {
-        Map<CurrencyCombination, PlotStatistics> allStatistics = history.getHistory(intervalMinutes)
-                .entrySet()
-                .stream()
-                .map(combi -> {
-                    PlotStatistics statistics = new PlotStatistics(combi.getValue());
-                    return new AbstractMap.SimpleEntry<>(combi.getKey(), statistics);
-                })
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        Map<CurrencyCombination, PlotStatistics> allStatistics = getCurrencyCombinationStatistics(intervalMinutes);
 
         String message = buildMessage(allStatistics, intervalMinutes);
         slack.sendChannelMessage("statistiken", message);
@@ -44,17 +41,20 @@ public class StatisticsSlackService {
     @Scheduled(cron = "0 0 22 * * *")
     public void sendDaySummary() {
         int minutesOfADay = 24 * 60;
-        Map<CurrencyCombination, PlotStatistics> allStatistics = history.getHistory(minutesOfADay)
-                .entrySet()
-                .stream()
-                .map(combi -> {
-                    PlotStatistics statistics = new PlotStatistics(combi.getValue());
-                    return new AbstractMap.SimpleEntry<>(combi.getKey(), statistics);
-                })
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        Map<CurrencyCombination, PlotStatistics> allStatistics = getCurrencyCombinationStatistics(minutesOfADay);
 
         String message = buildMessage(allStatistics, minutesOfADay);
         slack.sendChannelMessage("tages-statistik", message);
+    }
+
+    private Map<CurrencyCombination, PlotStatistics> getCurrencyCombinationStatistics(int minutes) {
+        return history.getHistoryFor(config.getAllCurrencyCombinations(), minutes).entrySet()
+                .stream()
+                .map(combiHistory -> {
+                    PlotStatistics statistics = new PlotStatistics(combiHistory.getValue());
+                    return new AbstractMap.SimpleEntry<>(combiHistory.getKey(), statistics);
+                })
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 
     private String buildMessage(Map<CurrencyCombination, PlotStatistics> statistics, int minutes) {

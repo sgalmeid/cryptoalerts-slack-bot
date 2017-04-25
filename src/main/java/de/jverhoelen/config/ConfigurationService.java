@@ -1,9 +1,9 @@
 package de.jverhoelen.config;
 
 import de.jverhoelen.currency.CryptoCurrency;
-import de.jverhoelen.currency.CurrencyCombinationService;
+import de.jverhoelen.currency.combination.CurrencyCombinationService;
 import de.jverhoelen.currency.ExchangeCurrency;
-import de.jverhoelen.currency.CurrencyCombination;
+import de.jverhoelen.currency.combination.CurrencyCombination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

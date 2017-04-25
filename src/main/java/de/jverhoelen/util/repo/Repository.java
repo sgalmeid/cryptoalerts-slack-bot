@@ -1,4 +1,4 @@
-package de.jverhoelen.util;
+package de.jverhoelen.util.repo;
 
 
 import org.springframework.data.domain.Sort;

@@ -2,6 +2,8 @@ package de.jverhoelen.ingest;
 
 import de.jverhoelen.config.ConfigurationService;
 import de.jverhoelen.config.TimeFrame;
+import de.jverhoelen.currency.plot.CurrencyPlot;
+import de.jverhoelen.currency.plot.Plot;
 import de.jverhoelen.notification.Growth;
 import de.jverhoelen.notification.currency.CurrencySlackService;
 import org.slf4j.Logger;
@@ -39,7 +41,7 @@ public class PoloniexIngestService {
 
     private RestTemplate restTemplate = new RestTemplateBuilder().build();
 
-    @Scheduled(fixedRateString = "#{new Double(${fetch.interval.sec} * 1000).intValue()}", initialDelay = 180000)
+    @Scheduled(fixedRateString = "#{new Double(${fetch.interval.sec} * 1000).intValue()}", initialDelay = 0)
     public void receivePoloniexTicker() {
         ResponseEntity<HashMap<String, Plot>> entity = getTicker();
 
@@ -50,11 +52,14 @@ public class PoloniexIngestService {
             config.getAllCurrencyCombinations().stream()
                     .forEach(combi -> {
                         CurrencyPlot plot = new CurrencyPlot(combi, body.get(combi.toApiKey()));
-                        plotHistory.put(plot);
+                        plotHistory.add(plot);
 
                         timeFrames.stream().forEach(timeFrame -> {
                             Growth growth = plotHistory.getTotalGrowthPercentage(combi, timeFrame.getInMinutes());
-                            slack.sendCurrencyNews(combi, growth, timeFrame);
+
+                            if (growth != null) {
+                                slack.sendCurrencyNews(combi, growth, timeFrame);
+                            }
                         });
                     });
         } else {

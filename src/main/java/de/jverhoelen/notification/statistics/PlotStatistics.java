@@ -1,7 +1,7 @@
 package de.jverhoelen.notification.statistics;
 
-import de.jverhoelen.ingest.CurrencyPlot;
-import de.jverhoelen.ingest.Plot;
+import de.jverhoelen.currency.plot.CurrencyPlot;
+import de.jverhoelen.currency.plot.Plot;
 import de.jverhoelen.notification.Growth;
 
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package de.jverhoelen.ingest;
+package de.jverhoelen.currency.plot;
 
 public class Plot {
 

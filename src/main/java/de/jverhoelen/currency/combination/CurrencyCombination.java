@@ -1,4 +1,7 @@
-package de.jverhoelen.currency;
+package de.jverhoelen.currency.combination;
+
+import de.jverhoelen.currency.CryptoCurrency;
+import de.jverhoelen.currency.ExchangeCurrency;
 
 import javax.persistence.*;
 

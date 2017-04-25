@@ -1,7 +1,7 @@
 package de.jverhoelen.notification.currency;
 
 import de.jverhoelen.config.TimeFrame;
-import de.jverhoelen.currency.CurrencyCombination;
+import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.notification.Growth;
 import de.jverhoelen.notification.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;

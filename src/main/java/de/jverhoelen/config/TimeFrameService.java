@@ -1,6 +1,6 @@
 package de.jverhoelen.config;
 
-import de.jverhoelen.util.AbstractRepositoryService;
+import de.jverhoelen.util.repo.AbstractRepositoryService;
 import org.springframework.stereotype.Service;
 
 @Service

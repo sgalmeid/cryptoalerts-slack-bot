@@ -1,4 +1,4 @@
-package de.jverhoelen.util;
+package de.jverhoelen.util.repo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
