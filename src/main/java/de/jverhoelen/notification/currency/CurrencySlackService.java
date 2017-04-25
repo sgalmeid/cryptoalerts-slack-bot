@@ -50,9 +50,9 @@ public class CurrencySlackService {
 
         StringBuilder builder = new StringBuilder()
                 .append("\uD83D\uDCE2 *" + combination.getCrypto().getFullName() + "* der letzten " + frame.getFrame() + " " + frame.getUnit().toString() + " \n")
-                .append("&gt; _Wachstum:_ " + growth.getPercentage() + " % " + growth.getActionPerformed())
-                .append("&gt; _Verlauf:_ " + growth.getBefore() + " " + exchangeName + " auf " + growth.getAfter() + " " + exchangeName)
-                .append("&gt; _Marktvolumen:_ " + marketVolumeGrowth.getPercentage() + " % " + marketVolumeGrowth.getActionPerformed())
+                .append("&gt; _Wachstum:_ " + growth.getPercentage() + " % " + growth.getActionPerformed() + "\n")
+                .append("&gt; _Verlauf:_ " + growth.getBefore() + " " + exchangeName + " auf " + growth.getAfter() + " " + exchangeName + "\n")
+                .append("&gt; _Marktvolumen:_ " + marketVolumeGrowth.getPercentage() + " % " + marketVolumeGrowth.getActionPerformed() + "\n")
                 .append("&gt; Mehr Infos: " + StatisticsSlackService.getPoloniexExchangeLink(combination.getExchange(), combination.getCrypto()));
 
         return builder.toString();

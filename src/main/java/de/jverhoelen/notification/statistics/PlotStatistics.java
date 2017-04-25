@@ -2,6 +2,7 @@ package de.jverhoelen.notification.statistics;
 
 import de.jverhoelen.currency.plot.CurrencyPlot;
 import de.jverhoelen.currency.plot.Plot;
+import de.jverhoelen.notification.CourseAlteration;
 import de.jverhoelen.notification.Growth;
 
 import java.util.Collections;
@@ -14,14 +15,14 @@ public class PlotStatistics {
     private double min;
     private double max;
     private double average;
-    private Growth growth;
+    private CourseAlteration courseAlteration;
 
     public PlotStatistics(List<CurrencyPlot> entries) {
         if (entries.isEmpty()) {
             this.min = -1;
             this.max = -1;
             this.average = -1;
-            this.growth = new Growth(-1, -1);
+            this.courseAlteration = new CourseAlteration(new Growth(-1, -1), new Growth(-1, -1));
         } else {
             Comparator<CurrencyPlot> lastPlotComparator = Comparator.comparing(o -> o.getPlot().getLast());
             List<Double> plotValues = entries.stream().map(e -> e.getPlot().getLast()).collect(Collectors.toList());
@@ -37,7 +38,9 @@ public class PlotStatistics {
             Plot oldest = entries.get(0).getPlot();
             Plot newest = entries.get(entries.size() - 1).getPlot();
 
-            this.growth = new Growth(oldest.getLast(), newest.getLast());
+            Growth growth = new Growth(oldest.getLast(), newest.getLast());
+            Growth marketVolumeGrowth = new Growth(oldest.getBaseVolume(), newest.getBaseVolume());
+            this.courseAlteration = new CourseAlteration(growth, marketVolumeGrowth);
         }
     }
 
@@ -65,11 +68,11 @@ public class PlotStatistics {
         this.average = average;
     }
 
-    public Growth getGrowth() {
-        return growth;
+    public CourseAlteration getCourseAlteration() {
+        return courseAlteration;
     }
 
-    public void setGrowth(Growth growth) {
-        this.growth = growth;
+    public void setCourseAlteration(CourseAlteration courseAlteration) {
+        this.courseAlteration = courseAlteration;
     }
 }

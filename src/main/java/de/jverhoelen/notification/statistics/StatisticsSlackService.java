@@ -5,6 +5,8 @@ import de.jverhoelen.currency.CryptoCurrency;
 import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.currency.ExchangeCurrency;
 import de.jverhoelen.ingest.PlotHistory;
+import de.jverhoelen.notification.CourseAlteration;
+import de.jverhoelen.notification.Growth;
 import de.jverhoelen.notification.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,14 +75,18 @@ public class StatisticsSlackService {
 
     private String buildCurrencySummary(PlotStatistics stat, ExchangeCurrency exchange, CryptoCurrency crypto) {
         String exchangeName = exchange.getFullName();
-        String actionPerformed = stat.getGrowth().getPercentage() > 0 ? "⬆️" : "⬇️";
+        CourseAlteration courseAlteration = stat.getCourseAlteration();
+        Growth growth = courseAlteration.getGrowth();
+        Growth marketVolumeGrowth = courseAlteration.getMarketVolumeGrowth();
+
         return "\uD83D\uDCE2 *" + crypto.getFullName() + "*\n" +
-                "&gt; _Wachstum:_ " + stat.getGrowth().toString(exchangeName) + " " + actionPerformed + " \n" +
+                "&gt; _Wachstum:_ " + growth.toString(exchangeName) + " " + growth.getActionPerformed() + " \n" +
                 "&gt; _MIN:_ " + stat.getMin() + " " + exchangeName + "\n" +
                 "&gt; _MAX:_ " + stat.getMax() + " " + exchange + "\n" +
+                "&gt; _Marktvolumen:_ " + marketVolumeGrowth.getPercentage() + " % " + marketVolumeGrowth.getActionPerformed() + "\n" +
                 "&gt; _Durchschnitt:_ " + stat.getAverage() + " " + exchangeName + "\n" +
                 "&gt; Mehr Infos: " + getPoloniexExchangeLink(exchange, crypto) + "\n" +
-                "\n\n\n";
+                "\n\n";
     }
 
     public static String getPoloniexExchangeLink(ExchangeCurrency exchange, CryptoCurrency crypto) {
