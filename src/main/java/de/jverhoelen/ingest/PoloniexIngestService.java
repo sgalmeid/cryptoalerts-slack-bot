@@ -4,7 +4,7 @@ import de.jverhoelen.config.ConfigurationService;
 import de.jverhoelen.config.TimeFrame;
 import de.jverhoelen.currency.plot.CurrencyPlot;
 import de.jverhoelen.currency.plot.Plot;
-import de.jverhoelen.notification.Growth;
+import de.jverhoelen.notification.CourseAlteration;
 import de.jverhoelen.notification.currency.CurrencySlackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,10 +55,10 @@ public class PoloniexIngestService {
                         plotHistory.add(plot);
 
                         timeFrames.stream().forEach(timeFrame -> {
-                            Growth growth = plotHistory.getTotalGrowthPercentage(combi, timeFrame.getInMinutes());
+                            CourseAlteration courseAlteration = plotHistory.getCourseAlteration(combi, timeFrame.getInMinutes());
 
-                            if (growth != null) {
-                                slack.sendCurrencyNews(combi, growth, timeFrame);
+                            if (courseAlteration != null) {
+                                slack.sendCurrencyNews(combi, courseAlteration, timeFrame);
                             }
                         });
                     });

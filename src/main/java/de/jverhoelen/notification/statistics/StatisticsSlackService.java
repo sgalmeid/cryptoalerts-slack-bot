@@ -83,7 +83,7 @@ public class StatisticsSlackService {
                 "\n\n\n";
     }
 
-    private String getPoloniexExchangeLink(ExchangeCurrency exchange, CryptoCurrency crypto) {
+    public static String getPoloniexExchangeLink(ExchangeCurrency exchange, CryptoCurrency crypto) {
         return ("https://poloniex.com/exchange#" + String.format("%s_%s", exchange.name(), crypto.name())).toLowerCase();
     }
 }

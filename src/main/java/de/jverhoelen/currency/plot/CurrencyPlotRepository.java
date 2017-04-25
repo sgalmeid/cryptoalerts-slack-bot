@@ -26,7 +26,7 @@ public interface CurrencyPlotRepository extends Repository<CurrencyPlot, Long> {
     )
     CurrencyPlot getByTimeAndCurrencyAndExchange(LocalDateTime time, ExchangeCurrency exchange, CryptoCurrency currency);
 
-    List<CurrencyPlot> findByCurrencyAndExchangeAndTimeAfter(CryptoCurrency currency, ExchangeCurrency exchange, LocalDateTime time);
+    List<CurrencyPlot> findByCurrencyAndExchangeAndTimeAfterOrderByTimeDesc(CryptoCurrency currency, ExchangeCurrency exchange, LocalDateTime time);
 
-    List<CurrencyPlot> findByTimeBetweenAndCurrencyAndExchange(LocalDateTime lowerLimit, LocalDateTime higherLimit, CryptoCurrency currency, ExchangeCurrency exchange);
+    List<CurrencyPlot> findByTimeBetweenAndCurrencyAndExchangeOrderByTimeDesc(LocalDateTime lowerLimit, LocalDateTime higherLimit, CryptoCurrency currency, ExchangeCurrency exchange);
 }

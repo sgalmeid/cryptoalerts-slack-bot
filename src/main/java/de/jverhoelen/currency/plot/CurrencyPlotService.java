@@ -20,7 +20,7 @@ public class CurrencyPlotService extends AbstractRepositoryService<CurrencyPlot,
 
     public List<CurrencyPlot> getByCombination(CurrencyCombination combination, int maxAgeMinutes) {
         LocalDateTime maxTime = LocalDateTime.now().minusMinutes(maxAgeMinutes);
-        return repository.findByCurrencyAndExchangeAndTimeAfter(combination.getCrypto(), combination.getExchange(), maxTime);
+        return repository.findByCurrencyAndExchangeAndTimeAfterOrderByTimeDesc(combination.getCrypto(), combination.getExchange(), maxTime);
     }
 
     public CurrencyPlot getPlotBefore(CurrencyCombination combination, int minutes) {
@@ -30,7 +30,7 @@ public class CurrencyPlotService extends AbstractRepositoryService<CurrencyPlot,
     public CurrencyPlot getPlotClosestTo(LocalDateTime time, CurrencyCombination combination) {
         LocalDateTime lowerLimit = time.minusSeconds(20);
         LocalDateTime higherLimit = time.plusSeconds(20);
-        List<CurrencyPlot> allCandidates = repository.findByTimeBetweenAndCurrencyAndExchange(lowerLimit, higherLimit, combination.getCrypto(), combination.getExchange());
+        List<CurrencyPlot> allCandidates = repository.findByTimeBetweenAndCurrencyAndExchangeOrderByTimeDesc(lowerLimit, higherLimit, combination.getCrypto(), combination.getExchange());
 
         if (allCandidates.isEmpty()) {
             return null;

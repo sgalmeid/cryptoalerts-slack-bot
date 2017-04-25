@@ -3,10 +3,11 @@ package de.jverhoelen.currency.plot;
 public class Plot {
 
     private Double last;
+    private Double baseVolume;
+
 //    private Double lowestAsk;
 //    private Double highestBid;
 //    private Double percentChange;
-//    private Double baseVolume;
 //    private Double quoteVolume;
 //    private Double isFrozen;
 //    private Double high24hr;
@@ -18,6 +19,14 @@ public class Plot {
 
     public void setLast(Double last) {
         this.last = last;
+    }
+
+    public Double getBaseVolume() {
+        return baseVolume;
+    }
+
+    public void setBaseVolume(Double baseVolume) {
+        this.baseVolume = baseVolume;
     }
 
 //    public Double getLowestAsk() {
@@ -44,13 +53,6 @@ public class Plot {
 //        this.percentChange = percentChange;
 //    }
 //
-//    public Double getBaseVolume() {
-//        return baseVolume;
-//    }
-//
-//    public void setBaseVolume(Double baseVolume) {
-//        this.baseVolume = baseVolume;
-//    }
 //
 //    public Double getQuoteVolume() {
 //        return quoteVolume;

@@ -3,6 +3,8 @@ package de.jverhoelen.ingest;
 import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.currency.plot.CurrencyPlot;
 import de.jverhoelen.currency.plot.CurrencyPlotService;
+import de.jverhoelen.currency.plot.Plot;
+import de.jverhoelen.notification.CourseAlteration;
 import de.jverhoelen.notification.Growth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,13 +34,23 @@ public class PlotHistory {
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 
-    public Growth getTotalGrowthPercentage(CurrencyCombination combination, int minutes) {
+    public List<CurrencyPlot> getCourse(CurrencyCombination combination, int minutes) {
+        return currencyPlotService.getByCombination(combination, minutes);
+    }
+
+    public CourseAlteration getCourseAlteration(CurrencyCombination combination, int minutes) {
         CurrencyPlot before = currencyPlotService.getPlotBefore(combination, minutes);
 
         if (before != null) {
             CurrencyPlot lastRecent = currencyPlotService.getPlotBefore(combination, 0);
 
-            return new Growth(before.getPlot().getLast(), lastRecent.getPlot().getLast());
+            Plot be = before.getPlot();
+            Plot afterPlot = lastRecent.getPlot();
+
+            Growth growth = new Growth(be.getLast(), afterPlot.getLast());
+            Growth marketVolumeGrowth = new Growth(be.getBaseVolume(), afterPlot.getBaseVolume());
+
+            return new CourseAlteration(growth, marketVolumeGrowth);
         }
 
         return null;
