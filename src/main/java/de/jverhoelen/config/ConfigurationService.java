@@ -1,10 +1,13 @@
 package de.jverhoelen.config;
 
+import de.jverhoelen.balance.notification.BalanceNotification;
+import de.jverhoelen.balance.notification.BalanceNotificationService;
 import de.jverhoelen.currency.CryptoCurrency;
-import de.jverhoelen.currency.combination.CurrencyCombinationService;
 import de.jverhoelen.currency.ExchangeCurrency;
 import de.jverhoelen.currency.combination.CurrencyCombination;
+import de.jverhoelen.currency.combination.CurrencyCombinationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +23,15 @@ public class ConfigurationService {
 
     @Autowired
     private CurrencyCombinationService currencyCombinationService;
+
+    @Autowired
+    private BalanceNotificationService balanceNotificationService;
+
+    @Value("${poloniex.apiKey}")
+    private String myApiKey;
+
+    @Value("${poloniex.secretKey}")
+    private String myApiSecret;
 
     private final List<CurrencyCombination> interestingCombinations = Arrays.asList(
             CurrencyCombination.of(CryptoCurrency.BTC, ExchangeCurrency.USDT),
@@ -47,6 +59,12 @@ public class ConfigurationService {
 
         if (currencyCombinationService.isEmpty()) {
             currencyCombinationService.add(interestingCombinations);
+        }
+
+        if (balanceNotificationService.isEmpty()) {
+            balanceNotificationService.add(Arrays.asList(
+                    new BalanceNotification("jonas", myApiKey, myApiSecret)
+            ));
         }
     }
 

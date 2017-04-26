@@ -21,7 +21,6 @@ public class CurrencyPlot {
 
     private LocalDateTime time;
 
-
     @Enumerated(value = EnumType.STRING)
     private ExchangeCurrency exchange;
 

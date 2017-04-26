@@ -18,11 +18,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static de.jverhoelen.util.Calculations.getUri;
 
 @Service
 public class PoloniexIngestService {
@@ -68,15 +68,7 @@ public class PoloniexIngestService {
     }
 
     private ResponseEntity<HashMap<String, Plot>> getTicker() {
-        return restTemplate.exchange(new RequestEntity<>(HttpMethod.GET, buildUri()), new ParameterizedTypeReference<HashMap<String, Plot>>() {
+        return restTemplate.exchange(new RequestEntity<>(HttpMethod.GET, getUri(TICKER_URL)), new ParameterizedTypeReference<HashMap<String, Plot>>() {
         });
-    }
-
-    private URI buildUri() {
-        try {
-            return new URI(TICKER_URL);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Error");
-        }
     }
 }

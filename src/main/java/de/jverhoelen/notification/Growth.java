@@ -13,8 +13,22 @@ public class Growth {
         this.before = before;
         this.after = after;
 
-        this.percentage = ((after / before) - 1) * 100;
-        this.actionPerformed = percentage > 0 ? "⬆️" : "⬇️";
+        if (before == after) {
+            this.percentage = 0;
+        } else {
+            this.percentage = ((after / before) - 1) * 100;
+        }
+        this.actionPerformed = createActionPerformed(percentage);
+    }
+
+    private String createActionPerformed(double percentage) {
+        if (percentage == 0) {
+            return "\uD83D\uDCA4";
+        } else if (percentage > 0) {
+            return "⬆️";
+        } else {
+            return "⬇️";
+        }
     }
 
     public boolean isNotifiable(TimeFrame within) {
