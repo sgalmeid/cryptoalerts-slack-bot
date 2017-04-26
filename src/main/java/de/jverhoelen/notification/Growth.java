@@ -1,6 +1,7 @@
 package de.jverhoelen.notification;
 
 import de.jverhoelen.config.TimeFrame;
+import de.jverhoelen.currency.plot.Plot;
 
 public class Growth {
 
@@ -19,6 +20,14 @@ public class Growth {
             this.percentage = ((after / before) - 1) * 100;
         }
         this.actionPerformed = createActionPerformed(percentage);
+    }
+
+    public static Growth fromBaseVolumes(Plot before, Plot after) {
+        return new Growth(before == null ? 0 : before.getBaseVolume(), after == null ? 0 : after.getBaseVolume());
+    }
+
+    public static Growth fromLast(Plot before, Plot after) {
+        return new Growth(before == null ? 0 : before.getLast(), after == null ? 0 : after.getLast());
     }
 
     private String createActionPerformed(double percentage) {

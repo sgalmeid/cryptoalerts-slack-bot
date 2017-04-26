@@ -22,7 +22,7 @@ public class PlotStatistics {
             this.min = -1;
             this.max = -1;
             this.average = -1;
-            this.courseAlteration = new CourseAlteration(new Growth(-1, -1), new Growth(-1, -1));
+            this.courseAlteration = new CourseAlteration(new Growth(0, 0), new Growth(0, 0));
         } else {
             Comparator<CurrencyPlot> lastPlotComparator = Comparator.comparing(o -> o.getPlot().getLast());
             List<Double> plotValues = entries.stream().map(e -> e.getPlot().getLast()).collect(Collectors.toList());
@@ -38,8 +38,8 @@ public class PlotStatistics {
             Plot oldest = entries.get(0).getPlot();
             Plot newest = entries.get(entries.size() - 1).getPlot();
 
-            Growth growth = new Growth(oldest.getLast(), newest.getLast());
-            Growth marketVolumeGrowth = new Growth(oldest.getBaseVolume(), newest.getBaseVolume());
+            Growth growth = Growth.fromLast(oldest, newest);
+            Growth marketVolumeGrowth = Growth.fromBaseVolumes(oldest, newest);
             this.courseAlteration = new CourseAlteration(growth, marketVolumeGrowth);
         }
     }

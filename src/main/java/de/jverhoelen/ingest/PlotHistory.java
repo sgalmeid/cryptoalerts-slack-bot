@@ -47,12 +47,12 @@ public class PlotHistory {
             Plot be = before.getPlot();
             Plot afterPlot = lastRecent.getPlot();
 
-            Growth growth = new Growth(be.getLast(), afterPlot.getLast());
+            Growth growth = Growth.fromLast(be, afterPlot);
             Growth marketVolumeGrowth;
             if (be.getBaseVolume() != null && afterPlot.getBaseVolume() != null) {
-                marketVolumeGrowth = new Growth(be.getBaseVolume(), afterPlot.getBaseVolume());
+                marketVolumeGrowth = Growth.fromBaseVolumes(be, afterPlot);
             } else {
-                marketVolumeGrowth = new Growth(-1, -1);
+                marketVolumeGrowth = new Growth(0, 0);
             }
 
             return new CourseAlteration(growth, marketVolumeGrowth);
