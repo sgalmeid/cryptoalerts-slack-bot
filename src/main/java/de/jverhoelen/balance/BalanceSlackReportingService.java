@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 @Service
 public class BalanceSlackReportingService {
 
+    private static final int MINUTES_OF_A_DAY = 24 * 60;
+
     @Value("${report.balance.interval.min}")
     private int reportingRateMinutes;
 
@@ -35,6 +37,41 @@ public class BalanceSlackReportingService {
     @Scheduled(fixedRateString = "#{new Double(${report.balance.interval.min} * 60 * 1000).intValue()}")
     public void reportToAll() {
         notificationService.getAll().stream().forEach(person -> reportFor(person));
+    }
+
+    @Scheduled(cron = "0 0 22 * * *")
+    public void reportDailyGrowthToAll() {
+        notificationService.getAll().stream().forEach(person -> reportDailyFor(person));
+    }
+
+    private void reportDailyFor(BalanceNotification person) {
+        BalancePlot oneDayBefore = balancePlotService.getFromMinutesAgo(person.getSlackUser(), MINUTES_OF_A_DAY);
+
+        if (oneDayBefore != null) {
+            Map<String, Balance> balancesOverZero = getBalancesOverZero(person);
+            double totalBitcoins = balanceService.getBtcSumOfBalances(balancesOverZero);
+            persistBalancePlot(person, totalBitcoins);
+
+            String message = buildDailyReportMessage(balancesOverZero, totalBitcoins, oneDayBefore);
+            slackService.sendUserMessage(person.getSlackUser(), message);
+        }
+    }
+
+    private String buildDailyReportMessage(Map<String, Balance> balances, double totalBitcoins, BalancePlot yesterdayPlot) {
+        Growth btcGrowth = new Growth(yesterdayPlot.getBtcValue(), totalBitcoins);
+
+        StringBuilder builder = new StringBuilder("⏰ *Tagesreport*");
+
+        builder.append("\nDein aktuelles Poloniex Guthaben beträgt *" + totalBitcoins + "* BTC");
+        builder.append("\nDas sind " + btcGrowth.getPercentage() + " % " + btcGrowth.getActionPerformed() + ") im Vergleich zu gestern");
+
+        balances.entrySet().stream().forEach(b -> {
+            Balance balance = b.getValue();
+            String currency = b.getKey();
+            builder.append("\n&gt; " + balance.getAvailable() + " " + currency + " (" + balance.getBtcValue() + " BTC)");
+        });
+
+        return builder.toString();
     }
 
     private void reportFor(BalanceNotification person) {

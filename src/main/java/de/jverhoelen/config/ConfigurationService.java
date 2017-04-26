@@ -46,9 +46,9 @@ public class ConfigurationService {
     );
 
     private final List<TimeFrame> timeFrames = Arrays.asList(
-            TimeFrame.of(ChronoUnit.HOURS, 2, 1, 1),
-            TimeFrame.of(ChronoUnit.MINUTES, 30, 2, 2),
-            TimeFrame.of(ChronoUnit.MINUTES, 15, 2.5, 2.5)
+            TimeFrame.of(ChronoUnit.MINUTES, 20, 1, 1),
+            TimeFrame.of(ChronoUnit.MINUTES, 40, 1, 1),
+            TimeFrame.of(ChronoUnit.HOURS, 1, 1, 1)
     );
 
     @PostConstruct

@@ -83,8 +83,8 @@ public class StatisticsSlackService {
                 "&gt; _Wachstum:_ " + growth.toString(exchangeName) + " " + growth.getActionPerformed() + " \n" +
                 "&gt; _MIN:_ " + stat.getMin() + " " + exchangeName + "\n" +
                 "&gt; _MAX:_ " + stat.getMax() + " " + exchange + "\n" +
-                "&gt; _Marktvolumen:_ " + marketVolumeGrowth.getPercentage() + " % " + marketVolumeGrowth.getActionPerformed() + "\n" +
                 "&gt; _Durchschnitt:_ " + stat.getAverage() + " " + exchangeName + "\n" +
+                "&gt; _Marktvolumen:_ " + marketVolumeGrowth.getPercentage() + " % " + marketVolumeGrowth.getActionPerformed() + "\n" +
                 "&gt; Mehr Infos: " + getPoloniexExchangeLink(exchange, crypto) + "\n" +
                 "\n\n";
     }

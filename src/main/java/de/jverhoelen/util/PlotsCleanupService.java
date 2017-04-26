@@ -13,6 +13,6 @@ public class PlotsCleanupService {
 
     @Scheduled(fixedRate = 600000)
     public void cleanUpOldEntries() {
-        plotService.deleteAllOlderThan(24);
+        plotService.deleteAllOlderThan(26);
     }
 }
