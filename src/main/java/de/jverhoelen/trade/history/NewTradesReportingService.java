@@ -33,7 +33,7 @@ public class NewTradesReportingService {
         List<BalanceNotification> toNotify = balanceNotificationService.getAll();
 
         toNotify.stream().forEach(n -> {
-            Map<String, List<Trade>> sellHistory = tradeHistory.getSellHistoryOf(n.getApiKey(), n.getSecretKey(), 60 * 24);
+            Map<String, List<Trade>> sellHistory = tradeHistory.getSellHistoryOf(n.getApiKey(), n.getSecretKey(), intervalMinutes);
             if (!sellHistory.isEmpty()) {
                 String message = buildNewSellsMessage(sellHistory);
                 slack.sendUserMessage(n.getSlackUser(), message);
