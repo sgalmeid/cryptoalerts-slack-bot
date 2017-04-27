@@ -1,4 +1,4 @@
-package de.jverhoelen.recommendation;
+package de.jverhoelen.trade.recommendation;
 
 import org.springframework.stereotype.Service;
 

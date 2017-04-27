@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static de.jverhoelen.util.Calculations.getUri;
+import static de.jverhoelen.util.Utils.getUri;
 
 @Service
 public class PoloniexIngestService {

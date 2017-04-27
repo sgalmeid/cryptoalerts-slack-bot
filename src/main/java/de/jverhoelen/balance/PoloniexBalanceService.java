@@ -14,7 +14,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
@@ -23,17 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static de.jverhoelen.util.Utils.threadSleep;
+
 @Service
 public class PoloniexBalanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PoloniexBalanceService.class);
     private static final String TRADING_API_URI = "https://poloniex.com/tradingApi";
-
-    @Value("${poloniex.apiKey}")
-    private String apiKey;
-
-    @Value("${poloniex.secretKey}")
-    private String secretKey;
+    private static final String COMMAND = "returnCompleteBalances";
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -44,9 +40,11 @@ public class PoloniexBalanceService {
     }
 
     public Map<String, Balance> getBalancesOf(String apiKey, String secretKey) {
+        threadSleep(1000);
+
         try {
             String nonce = String.valueOf(System.currentTimeMillis());
-            String queryArgs = "command=returnCompleteBalances&nonce=" + nonce;
+            String queryArgs = "command=" + COMMAND + "&nonce=" + nonce;
 
             Mac shaMac = Mac.getInstance("HmacSHA512");
             SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA512");
@@ -60,7 +58,7 @@ public class PoloniexBalanceService {
             post.addHeader("Sign", sign);
 
             List<NameValuePair> params = new ArrayList<>();
-            params.add(new BasicNameValuePair("command", "returnCompleteBalances"));
+            params.add(new BasicNameValuePair("command", COMMAND));
             params.add(new BasicNameValuePair("nonce", nonce));
             post.setEntity(new UrlEncodedFormEntity(params));
 
@@ -71,6 +69,7 @@ public class PoloniexBalanceService {
             return mapper.readValue(resultJson, new TypeReference<Map<String, Balance>>() {
             });
         } catch (Exception e) {
+            LOGGER.error("Something went wrong while getting balances from Poloniex for an account", e);
             return null;
         }
     }

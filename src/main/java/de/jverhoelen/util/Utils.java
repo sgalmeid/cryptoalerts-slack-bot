@@ -9,9 +9,9 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class Calculations {
+public class Utils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Calculations.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
     public static String hmac512Digest(String msg, String keyString) {
         Mac shaMac;
@@ -34,6 +34,14 @@ public class Calculations {
             return new URI(uri);
         } catch (URISyntaxException e) {
             return null;
+        }
+    }
+
+    public static void threadSleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            LOGGER.error("Letting the thread sleep went wrong", e);
         }
     }
 }
