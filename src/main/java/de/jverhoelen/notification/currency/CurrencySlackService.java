@@ -4,6 +4,7 @@ import de.jverhoelen.config.TimeFrame;
 import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.notification.CourseAlteration;
 import de.jverhoelen.notification.Growth;
+import de.jverhoelen.notification.NotificationReasonCheck;
 import de.jverhoelen.notification.SlackService;
 import de.jverhoelen.notification.statistics.StatisticsSlackService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +17,17 @@ import java.util.Map;
 @Service
 public class CurrencySlackService {
 
-    private Map<CurrencyNotificationSetting, LocalDateTime> notificationsSent = new HashMap<>();
+    private Map<CurrencyNotificationSetting, LocalDateTime> lastNotificationSent = new HashMap<>();
 
     @Autowired
     private SlackService slackService;
 
     public void sendCurrencyNews(CurrencyCombination combination, CourseAlteration course, TimeFrame frame) {
-        CurrencyNotificationSetting notificationSetting = new CurrencyNotificationSetting(combination, frame.getInMinutes());
+        NotificationReasonCheck notificationReasons = course.evaluatePossibleNotificationReasons(frame);
+        CurrencyNotificationSetting notificationSetting = new CurrencyNotificationSetting(combination, frame.getInMinutes(), notificationReasons.getNotificationReason());
 
-        if (course.isNotifiable(frame)) {
-
-            LocalDateTime lastSent = notificationsSent.get(notificationSetting);
+        if (notificationReasons.shouldBeNotified()) {
+            LocalDateTime lastSent = lastNotificationSent.get(notificationSetting);
             LocalDateTime now = LocalDateTime.now();
 
             if (shouldBeAlertedFirstOrAgain(frame, lastSent, now)) {
@@ -40,7 +41,7 @@ public class CurrencySlackService {
         String cryptoCurrencyName = combination.getCrypto().getFullName().trim().toLowerCase();
 
         slackService.sendChannelMessage(cryptoCurrencyName, message);
-        notificationsSent.put(notificationSetting, now);
+        lastNotificationSent.put(notificationSetting, now);
     }
 
     private String buildMessage(CurrencyCombination combination, CourseAlteration courseAlteration, TimeFrame frame) {

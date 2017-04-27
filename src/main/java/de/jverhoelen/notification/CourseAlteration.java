@@ -1,6 +1,9 @@
 package de.jverhoelen.notification;
 
+import com.google.common.collect.ImmutableMap;
 import de.jverhoelen.config.TimeFrame;
+
+import java.util.Map;
 
 public class CourseAlteration {
 
@@ -28,7 +31,13 @@ public class CourseAlteration {
         this.growth = growth;
     }
 
-    public boolean isNotifiable(TimeFrame within) {
-        return growth.isNotifiable(within);
+    public NotificationReasonCheck evaluatePossibleNotificationReasons(TimeFrame within) {
+        Map<CourseNotificationEvent, Boolean> notifiablePerSource = ImmutableMap.
+                <CourseNotificationEvent, Boolean>builder()
+//                .put(CourseNotificationEvent.MARKET_VOLUME, marketVolumeGrowth.isNotifiable(within))
+                .put(CourseNotificationEvent.PRICE, growth.isNotifiable(within))
+                .build();
+
+        return new NotificationReasonCheck(notifiablePerSource);
     }
 }
