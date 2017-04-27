@@ -45,14 +45,14 @@ public class CurrencySlackService {
 
     private String buildMessage(CurrencyCombination combination, CourseAlteration courseAlteration, TimeFrame frame) {
         String exchangeName = combination.getExchange().name();
-        Growth growth = courseAlteration.getGrowth();
-        Growth marketVolumeGrowth = courseAlteration.getMarketVolumeGrowth();
+        Growth g = courseAlteration.getGrowth();
+        Growth mvG = courseAlteration.getMarketVolumeGrowth();
 
         StringBuilder builder = new StringBuilder()
                 .append("\uD83D\uDCE2 *" + combination.getCrypto().getFullName() + "* der letzten " + frame.getFrame() + " " + frame.getUnit().toString() + " \n")
-                .append("&gt; _Wachstum:_ " + growth.getPercentage() + " % " + growth.getActionPerformed() + "\n")
-                .append("&gt; _Verlauf:_ " + growth.getBefore() + " " + exchangeName + " auf " + growth.getAfter() + " " + exchangeName + "\n")
-                .append("&gt; _Marktvolumen:_ " + marketVolumeGrowth.getPercentage() + " % " + marketVolumeGrowth.getActionPerformed() + "\n")
+                .append("&gt; _Wachstum:_ " + g.getRoundPercentage() + " % " + g.getActionPerformed() + "\n")
+                .append("&gt; _Verlauf:_ " + g.buildCourse(exchangeName) + "\n")
+                .append("&gt; _Marktvolumen:_ " + mvG.getRoundPercentage() + " % " + mvG.getActionPerformed() + "\n")
                 .append("&gt; Mehr Infos: " + StatisticsSlackService.getPoloniexExchangeLink(combination.getExchange(), combination.getCrypto()));
 
         return builder.toString();

@@ -62,13 +62,15 @@ public class BalanceSlackReportingService {
 
         StringBuilder builder = new StringBuilder("⏰ *Tagesreport*");
 
-        builder.append("\nDein aktuelles Poloniex Guthaben beträgt *" + totalBitcoins + "* BTC");
-        builder.append("\nDas sind " + btcGrowth.getPercentage() + " % " + btcGrowth.getActionPerformed() + ") im Vergleich zu gestern");
+        builder.append("\nDein aktuelles Poloniex Guthaben beträgt *" + String.format("%.3f", totalBitcoins) + "* BTC");
+        builder.append("\nDas sind " + btcGrowth.getRoundPercentage() + " % " + btcGrowth.getActionPerformed() + ") im Vergleich zu gestern");
 
-        balances.entrySet().stream().forEach(b -> {
-            Balance balance = b.getValue();
-            String currency = b.getKey();
-            builder.append("\n&gt; " + balance.getAvailable() + " " + currency + " (" + balance.getBtcValue() + " BTC)");
+        balances.entrySet().stream().forEach(balanceEntry -> {
+            Balance b = balanceEntry.getValue();
+            String currency = balanceEntry.getKey();
+            builder.append(
+                    "\n&gt; " + b.getRoundedAvailable() + " " + currency + " (" + b.getRoundedBtcValue() + " BTC) + " + b.getRoundedOnOrders() + " in Verkäufen"
+            );
         });
 
         return builder.toString();
@@ -92,13 +94,15 @@ public class BalanceSlackReportingService {
         }
 
         StringBuilder builder = new StringBuilder(
-                "Dein aktuelles Poloniex Guthaben beträgt *" + totalBitcoins + "* BTC (" + btcGrowth.getPercentage() + " % " + btcGrowth.getActionPerformed() + ")"
+                "Dein aktuelles Poloniex Guthaben beträgt *" + String.format("%.3f", totalBitcoins) + "* BTC (" + btcGrowth.getRoundPercentage() + " % " + btcGrowth.getActionPerformed() + ")"
         );
 
-        balances.entrySet().stream().forEach(b -> {
-            Balance balance = b.getValue();
-            String currency = b.getKey();
-            builder.append("\n&gt; " + balance.getAvailable() + " " + currency + " (" + balance.getBtcValue() + " BTC)");
+        balances.entrySet().stream().forEach(balanceEntry -> {
+            Balance b = balanceEntry.getValue();
+            String currency = balanceEntry.getKey();
+            builder.append(
+                    "\n&gt; " + b.getRoundedAvailable() + " " + currency + " (" + b.getRoundedBtcValue() + " BTC) + " + b.getRoundedOnOrders() + " in Verkäufen"
+            );
         });
 
         builder.append("\nDeposit/Withdraw: https://poloniex.com/balances");

@@ -63,7 +63,7 @@ public class SlackService {
         SlackUser user = session.findUserByUserName(username);
 
         if (user != null) {
-            LOG.info("Send message {} to username {}", message, user);
+            LOG.info("Send message {} to username {}", message, username);
 
             if (!isDevelopmentEnvironment()) {
                 session.sendMessageToUser(user, message, null);

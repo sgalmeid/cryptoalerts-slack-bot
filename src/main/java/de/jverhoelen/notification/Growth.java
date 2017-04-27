@@ -40,6 +40,14 @@ public class Growth {
         }
     }
 
+    public String getRoundPercentage() {
+        return String.format("%.2f", percentage);
+    }
+
+    public String buildCourse(String exchangeName) {
+        return before + " " + exchangeName + " auf " + after + " " + exchangeName;
+    }
+
     public boolean isNotifiable(TimeFrame within) {
         return percentage >= within.getGainThreshold() || percentage <= (within.getLossThreshold() * -1);
     }
@@ -77,6 +85,6 @@ public class Growth {
     }
 
     public String toString(String exchangeName) {
-        return percentage + " % (" + before + " " + exchangeName + " auf " + after + " " + exchangeName + ")";
+        return getRoundPercentage() + " % (" + before + " " + exchangeName + " auf " + after + " " + exchangeName + ")";
     }
 }

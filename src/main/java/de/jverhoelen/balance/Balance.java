@@ -10,6 +10,14 @@ public class Balance {
         return available;
     }
 
+    public String getRoundedAvailable() {
+        return String.format("%.2f", available);
+    }
+
+    public String getRoundedOnOrders() {
+        return String.format("%.2f", onOrders);
+    }
+
     public void setAvailable(double available) {
         this.available = available;
     }
@@ -24,6 +32,10 @@ public class Balance {
 
     public double getBtcValue() {
         return btcValue;
+    }
+
+    public String getRoundedBtcValue() {
+        return String.format("%.3f", btcValue);
     }
 
     public void setBtcValue(double btcValue) {

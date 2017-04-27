@@ -2,8 +2,8 @@ package de.jverhoelen.notification.statistics;
 
 import de.jverhoelen.config.ConfigurationService;
 import de.jverhoelen.currency.CryptoCurrency;
-import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.currency.ExchangeCurrency;
+import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.ingest.PlotHistory;
 import de.jverhoelen.notification.CourseAlteration;
 import de.jverhoelen.notification.Growth;
@@ -84,7 +84,7 @@ public class StatisticsSlackService {
                 "&gt; _MIN:_ " + stat.getMin() + " " + exchangeName + "\n" +
                 "&gt; _MAX:_ " + stat.getMax() + " " + exchange + "\n" +
                 "&gt; _Durchschnitt:_ " + stat.getAverage() + " " + exchangeName + "\n" +
-                "&gt; _Marktvolumen:_ " + marketVolumeGrowth.getPercentage() + " % " + marketVolumeGrowth.getActionPerformed() + "\n" +
+                "&gt; _Marktvolumen:_ " + marketVolumeGrowth.getRoundPercentage() + " % " + marketVolumeGrowth.getActionPerformed() + "\n" +
                 "&gt; Mehr Infos: " + getPoloniexExchangeLink(exchange, crypto) + "\n" +
                 "\n\n";
     }
