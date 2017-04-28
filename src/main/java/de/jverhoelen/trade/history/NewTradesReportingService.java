@@ -46,10 +46,28 @@ public class NewTradesReportingService {
         StringBuilder builder = new StringBuilder("Es wurden *" + totalTradesSize + " neue Verkäufe* getätigt:");
 
         sellHistory.entrySet().forEach(currencySells -> {
-            builder.append("\n&gt; " + currencySells.getValue().size() + "x " + currencySells.getKey().replace("_", "/"));
+            List<Trade> trades = currencySells.getValue();
+            builder.append("\n&gt; " + trades.size() + "x " + formatCurrencyCombi(currencySells.getKey()) + ": " + formatCurrencyTradesSummary(trades));
         });
         builder.append("\nAusführliche Trade-History: https://poloniex.com/tradeHistory");
 
         return builder.toString();
+    }
+
+    private String formatCurrencyTradesSummary(List<Trade> trades) {
+        List<Double> totals = trades.stream().map(t -> t.getTotal()).collect(Collectors.toList());
+        List<Double> amounts = trades.stream().map(t -> t.getAmount()).collect(Collectors.toList());
+        List<Double> rates = trades.stream().map(t -> t.getRate()).collect(Collectors.toList());
+
+        Double total = totals.stream().reduce(0.0, Double::sum);
+        Double amount = amounts.stream().reduce(0.0, Double::sum);
+        Double avgRate = rates.stream().reduce(0.0, Double::sum) / rates.size();
+
+        return amount + " in " + total + " verkauft (Ø-Rate: " + avgRate + ")";
+    }
+
+    private String formatCurrencyCombi(String combination) {
+        String[] split = combination.split("_");
+        return split[1] + " ➡ " + split[0];
     }
 }
