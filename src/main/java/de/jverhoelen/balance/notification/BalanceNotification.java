@@ -15,10 +15,17 @@ public class BalanceNotification {
     private String apiKey;
     private String secretKey;
 
-    public BalanceNotification(String slackUser, String apiKey, String secretKey) {
+    private boolean reportBuys;
+    private boolean reportSells;
+    private boolean reportBalance;
+
+    public BalanceNotification(String slackUser, String apiKey, String secretKey, boolean reportBuys, boolean reportSells, boolean reportBalance) {
         this.slackUser = slackUser;
         this.apiKey = apiKey;
         this.secretKey = secretKey;
+        this.reportBuys = reportBuys;
+        this.reportSells = reportSells;
+        this.reportBalance = reportBalance;
     }
 
     public BalanceNotification() {
@@ -54,5 +61,29 @@ public class BalanceNotification {
 
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
+    }
+
+    public boolean isReportBuys() {
+        return reportBuys;
+    }
+
+    public void setReportBuys(boolean reportBuys) {
+        this.reportBuys = reportBuys;
+    }
+
+    public boolean isReportSells() {
+        return reportSells;
+    }
+
+    public void setReportSells(boolean reportSells) {
+        this.reportSells = reportSells;
+    }
+
+    public boolean isReportBalance() {
+        return reportBalance;
+    }
+
+    public void setReportBalance(boolean reportBalance) {
+        this.reportBalance = reportBalance;
     }
 }

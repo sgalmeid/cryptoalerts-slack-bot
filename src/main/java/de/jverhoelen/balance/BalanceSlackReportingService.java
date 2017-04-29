@@ -41,7 +41,9 @@ public class BalanceSlackReportingService {
 
     @Scheduled(cron = "0 0 22 * * *")
     public void reportDailyGrowthToAll() {
-        notificationService.getAll().stream().forEach(person -> reportDailyFor(person));
+        notificationService.getAll().stream()
+                .filter(person -> person.isReportBalance())
+                .forEach(person -> reportDailyFor(person));
     }
 
     private void reportDailyFor(BalanceNotification person) {

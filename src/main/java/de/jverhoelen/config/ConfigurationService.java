@@ -63,7 +63,7 @@ public class ConfigurationService {
 
         if (balanceNotificationService.isEmpty()) {
             balanceNotificationService.add(Arrays.asList(
-                    new BalanceNotification("jonas", myApiKey, myApiSecret)
+                    new BalanceNotification("jonas", myApiKey, myApiSecret, true, true, true)
             ));
         }
     }

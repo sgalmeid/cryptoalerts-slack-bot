@@ -1,5 +1,7 @@
 package de.jverhoelen.trade;
 
+import com.google.common.base.MoreObjects;
+
 public class Trade {
 
     private long globalTradeID;
@@ -91,6 +93,22 @@ public class Trade {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("globalTradeID", globalTradeID)
+                .add("tradeID", tradeID)
+                .add("date", date)
+                .add("rate", rate)
+                .add("amount", amount)
+                .add("total", total)
+                .add("fee", fee)
+                .add("orderNumber", orderNumber)
+                .add("type", type)
+                .add("category", category)
+                .toString();
     }
 
     @Override
