@@ -13,10 +13,14 @@ public class ManualTradeService {
     private SlackService slack;
 
     @Autowired
-    private SellBuyMessagePostedListener saleListener;
+    private SellBuyMessagePostedListener sellBuyListener;
+
+    @Autowired
+    private AdminMessagePostedListener adminActionListener;
 
     @PostConstruct
     public void init() {
-        slack.registerMessagePostedListener(saleListener);
+        slack.registerMessagePostedListener(sellBuyListener);
+        slack.registerMessagePostedListener(adminActionListener);
     }
 }

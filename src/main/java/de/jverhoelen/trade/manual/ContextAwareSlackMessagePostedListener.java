@@ -2,6 +2,7 @@ package de.jverhoelen.trade.manual;
 
 import com.ullink.slack.simpleslackapi.listeners.SlackMessagePostedListener;
 import de.jverhoelen.balance.notification.BalanceNotificationService;
+import de.jverhoelen.config.TimeFrameService;
 import de.jverhoelen.notification.SlackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,4 +20,7 @@ public abstract class ContextAwareSlackMessagePostedListener implements SlackMes
 
     @Autowired
     protected SlackService slack;
+
+    @Autowired
+    protected TimeFrameService timeFrameService;
 }
