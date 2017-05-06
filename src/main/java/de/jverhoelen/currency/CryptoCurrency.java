@@ -17,6 +17,16 @@ public enum CryptoCurrency {
         this.fullName = fullName;
     }
 
+    public static CryptoCurrency byName(String name) {
+        for (CryptoCurrency currency : values()) {
+            if (currency.getFullName().toLowerCase().equals(name.toLowerCase())) {
+                return currency;
+            }
+        }
+
+        return null;
+    }
+
     public String getFullName() {
         return fullName;
     }

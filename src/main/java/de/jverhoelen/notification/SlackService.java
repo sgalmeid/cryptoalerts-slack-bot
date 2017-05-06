@@ -4,13 +4,19 @@ import com.ullink.slack.simpleslackapi.SlackChannel;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.SlackUser;
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory;
+import com.ullink.slack.simpleslackapi.listeners.SlackMessagePostedListener;
+import de.jverhoelen.config.ConfigurationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SlackService {
@@ -25,24 +31,32 @@ public class SlackService {
 
     private SlackSession session;
 
+    @Autowired
+    private ConfigurationService configurationService;
+
     @PostConstruct
     public void init() {
-        this.session = createSession();
         String environmentResult = isDevelopmentEnvironment()
                 ? "the DEV environment and no Slack notifications will be sent"
                 : "the PROD environment and Slack notifications will be sent as usual";
         LOG.info("Environment {} was detected, so it is {}", environment, environmentResult);
+
+        this.session = createSession();
+        joinChannels(getRequiredChannelNames());
     }
 
-    private SlackSession createSession() {
-        SlackSession session = SlackSessionFactory.createWebSocketSlackSession(botAuthToken);
-        try {
-            session.connect();
-        } catch (IOException e) {
-            LOG.error("Slack session could not be created with token {}", botAuthToken, e);
-        }
+    public void sendUserMessage(String username, String message) {
+        SlackUser user = session.findUserByUserName(username);
 
-        return session;
+        if (user != null) {
+            LOG.info("Send message {} to username {}", message, username);
+
+            if (!isDevelopmentEnvironment()) {
+                session.sendMessageToUser(user, message, null);
+            }
+        } else {
+            throw new RuntimeException("User " + username + " was not recognized!");
+        }
     }
 
     public void sendChannelMessage(String channelName, String message) {
@@ -59,18 +73,31 @@ public class SlackService {
         }
     }
 
-    public void sendUserMessage(String username, String message) {
-        SlackUser user = session.findUserByUserName(username);
+    public void registerMessagePostedListener(SlackMessagePostedListener listener) {
+        session.addMessagePostedListener(listener);
+    }
 
-        if (user != null) {
-            LOG.info("Send message {} to username {}", message, username);
+    private List<String> getRequiredChannelNames() {
+        List<String> requiredChannelNames = configurationService.getAllCurrencyCombinations().stream()
+                .map(cc -> cc.getCrypto().getFullName().toLowerCase())
+                .collect(Collectors.toList());
+        requiredChannelNames.addAll(Arrays.asList("tages-statistik", "statistiken"));
+        return requiredChannelNames;
+    }
 
-            if (!isDevelopmentEnvironment()) {
-                session.sendMessageToUser(user, message, null);
-            }
-        } else {
-            throw new RuntimeException("User " + username + " was not recognized!");
+    private void joinChannels(List<String> channelNames) {
+        channelNames.stream().forEach(channel -> session.joinChannel(channel));
+    }
+
+    private SlackSession createSession() {
+        SlackSession session = SlackSessionFactory.createWebSocketSlackSession(botAuthToken);
+        try {
+            session.connect();
+        } catch (IOException e) {
+            LOG.error("Slack session could not be created with token {}", botAuthToken, e);
         }
+
+        return session;
     }
 
     private boolean isDevelopmentEnvironment() {
