@@ -4,6 +4,7 @@ import de.jverhoelen.balance.notification.BalanceNotification;
 import de.jverhoelen.balance.notification.BalanceNotificationService;
 import de.jverhoelen.balance.plot.BalancePlot;
 import de.jverhoelen.balance.plot.BalancePlotService;
+import de.jverhoelen.currency.CryptoCurrency;
 import de.jverhoelen.notification.Growth;
 import de.jverhoelen.notification.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -36,14 +39,21 @@ public class BalanceSlackReportingService {
 
     @Scheduled(fixedRateString = "#{new Double(${report.balance.interval.min} * 60 * 1000).intValue()}")
     public void reportToAll() {
-        notificationService.getAll().stream().forEach(person -> reportFor(person));
+        notificationService.getAll().stream()
+                .forEach(person -> {
+                    reportFor(person);
+                    suggestChannelsFor(person);
+                });
     }
 
     @Scheduled(cron = "0 0 22 * * *")
     public void reportDailyGrowthToAll() {
         notificationService.getAll().stream()
                 .filter(person -> person.isReportBalance())
-                .forEach(person -> reportDailyFor(person));
+                .forEach(person -> {
+                    reportDailyFor(person);
+                    suggestChannelsFor(person);
+                });
     }
 
     private void reportDailyFor(BalanceNotification person) {
@@ -52,10 +62,42 @@ public class BalanceSlackReportingService {
         if (oneDayBefore != null) {
             Map<String, Balance> balancesOverZero = getBalancesOverZero(person);
             double totalBitcoins = balanceService.getBtcSumOfBalances(balancesOverZero);
-            persistBalancePlot(person, totalBitcoins);
+            persistBalancePlot(person, totalBitcoins, balancesOverZero);
 
             String message = buildDailyReportMessage(balancesOverZero, totalBitcoins, oneDayBefore);
             slackService.sendUserMessage(person.getSlackUser(), message);
+        }
+    }
+
+    private void suggestChannelsFor(BalanceNotification person) {
+        BalancePlot now = balancePlotService.getFromMinutesAgo(person.getSlackUser(), 0);
+
+        if (now != null) {
+            // all currencies the user has some of
+            List<CryptoCurrency> possessingCryptoCurrencies = Arrays.stream(now.getCurrencies())
+                    .map(currencyName -> CryptoCurrency.byShortName(currencyName))
+                    .filter(cc -> cc != null)
+                    .collect(Collectors.toList());
+
+            // all currencies he has but is no member of the channel
+            List<CryptoCurrency> currenciesWhereNotChannelMember = possessingCryptoCurrencies.stream()
+                    .filter(possessedCc -> {
+                        String channelName = possessedCc.getFullName().toLowerCase();
+                        return slackService.channelExists(channelName) && !slackService.isMemberOfChannel(person.getSlackUser(), channelName);
+                    })
+                    .collect(Collectors.toList());
+
+            if (!currenciesWhereNotChannelMember.isEmpty()) {
+                StringBuilder builder = new StringBuilder("\uD83D\uDCA1 Wie wäre es mit *Channel-Vorschlägen*?");
+
+                currenciesWhereNotChannelMember.stream().forEach(cc -> {
+                    builder.append("\n&gt; Du besitzt " + cc.name() + ", bist aber nicht in #" + cc.getFullName().toLowerCase());
+                });
+
+                builder.append("\n\n...gern geschehen \uD83D\uDE09");
+
+                slackService.sendUserMessage(person.getSlackUser(), builder.toString());
+            }
         }
     }
 
@@ -83,7 +125,7 @@ public class BalanceSlackReportingService {
         double totalBitcoins = balanceService.getBtcSumOfBalances(balancesOverZero);
         BalancePlot lastPlot = balancePlotService.getFromMinutesAgo(person.getSlackUser(), reportingRateMinutes);
 
-        persistBalancePlot(person, totalBitcoins);
+        persistBalancePlot(person, totalBitcoins, balancesOverZero);
 
         String message = buildMessage(balancesOverZero, totalBitcoins, lastPlot);
         slackService.sendUserMessage(person.getSlackUser(), message);
@@ -121,7 +163,7 @@ public class BalanceSlackReportingService {
         return balances.entrySet().stream().filter(balance -> balance.getValue().getBtcValue() > 0).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 
-    private void persistBalancePlot(BalanceNotification person, double totalBitcoins) {
-        balancePlotService.add(BalancePlot.from(totalBitcoins, person.getSlackUser()));
+    private void persistBalancePlot(BalanceNotification person, double totalBitcoins, Map<String, Balance> currencyBalances) {
+        balancePlotService.add(BalancePlot.from(totalBitcoins, person.getSlackUser(), currencyBalances));
     }
 }

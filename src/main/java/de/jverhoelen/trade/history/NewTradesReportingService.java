@@ -5,8 +5,10 @@ import de.jverhoelen.balance.notification.BalanceNotificationService;
 import de.jverhoelen.notification.SlackService;
 import de.jverhoelen.trade.Trade;
 import de.jverhoelen.trade.TradeType;
+import de.jverhoelen.interaction.FatalErrorEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static de.jverhoelen.util.Utils.roundSmartly;
 
 @Service
 public class NewTradesReportingService {
@@ -27,33 +31,40 @@ public class NewTradesReportingService {
     @Autowired
     private BalanceNotificationService balanceNotificationService;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     @Value("${report.trades.interval.min}")
     private int intervalMinutes;
 
     @Scheduled(fixedRateString = "#{new Double(${report.trades.interval.min} * 60 * 1000).intValue()}")
-    public void reportNewSells() {
-        List<BalanceNotification> toNotify = balanceNotificationService.getAll();
+    public void reportNewTrades() {
+        try {
+            List<BalanceNotification> toNotify = balanceNotificationService.getAll();
 
-        Predicate<BalanceNotification> shouldBeNotifiedOnSell = person -> person.isReportSells();
-        toNotify.stream()
-                .filter(shouldBeNotifiedOnSell)
-                .forEach(n -> {
-                    Map<String, List<Trade>> sellHistory = tradeHistory.getSellHistoryOf(n.getApiKey(), n.getSecretKey(), intervalMinutes);
-                    if (!sellHistory.isEmpty()) {
-                        String message = buildNewTradeMessage(sellHistory, TradeType.sell);
-                        slack.sendUserMessage(n.getSlackUser(), message);
-                    }
-                });
+            Predicate<BalanceNotification> shouldBeNotifiedOnSell = person -> person.isReportSells();
+            toNotify.stream()
+                    .filter(shouldBeNotifiedOnSell)
+                    .forEach(n -> {
+                        Map<String, List<Trade>> sellHistory = tradeHistory.getSellHistoryOf(n.getApiKey(), n.getSecretKey(), intervalMinutes);
+                        if (!sellHistory.isEmpty()) {
+                            String message = buildNewTradeMessage(sellHistory, TradeType.sell);
+                            slack.sendUserMessage(n.getSlackUser(), message);
+                        }
+                    });
 
-        toNotify.stream()
-                .filter(person -> person.isReportBuys())
-                .forEach(n -> {
-                    Map<String, List<Trade>> buyHistory = tradeHistory.getBuyHistoryOf(n.getApiKey(), n.getSecretKey(), intervalMinutes);
-                    if (!buyHistory.isEmpty()) {
-                        String message = buildNewTradeMessage(buyHistory, TradeType.buy);
-                        slack.sendUserMessage(n.getSlackUser(), message);
-                    }
-                });
+            toNotify.stream()
+                    .filter(person -> person.isReportBuys())
+                    .forEach(n -> {
+                        Map<String, List<Trade>> buyHistory = tradeHistory.getBuyHistoryOf(n.getApiKey(), n.getSecretKey(), intervalMinutes);
+                        if (!buyHistory.isEmpty()) {
+                            String message = buildNewTradeMessage(buyHistory, TradeType.buy);
+                            slack.sendUserMessage(n.getSlackUser(), message);
+                        }
+                    });
+        } catch (Exception ex) {
+            eventPublisher.publishEvent(new FatalErrorEvent("Beim abholen der Buy/Sell History oder reporten dieser ist ein Fehler aufgetreten", ex));
+        }
     }
 
     private String buildNewTradeMessage(Map<String, List<Trade>> sellHistory, TradeType tradeType) {
@@ -78,7 +89,7 @@ public class NewTradesReportingService {
         Double amount = amounts.stream().reduce(0.0, Double::sum);
         Double avgRate = rates.stream().reduce(0.0, Double::sum) / trades.size();
 
-        return amount + " in " + total + " " + tradeType.getVerbPast() + " (Ø-Rate: " + avgRate + ")";
+        return roundSmartly(amount) + " in " + roundSmartly(total) + " " + tradeType.getVerbPast() + " (Ø-Rate: " + roundSmartly(avgRate) + ")";
     }
 
     private String formatCurrencyCombi(String combination, TradeType tradeType) {

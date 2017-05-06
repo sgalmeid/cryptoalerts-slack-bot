@@ -1,9 +1,12 @@
 package de.jverhoelen.balance.plot;
 
+import de.jverhoelen.balance.Balance;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 public class BalancePlot {
@@ -15,15 +18,25 @@ public class BalancePlot {
     private LocalDateTime time;
     private String slackUser;
     private double btcValue;
+    private String[] currencies;
 
-    public static BalancePlot from(double totalBtcBalance, String ofSlackUser) {
+    public static BalancePlot from(double totalBtcBalance, String ofSlackUser, Map<String, Balance> currencyBalances) {
         BalancePlot plot = new BalancePlot();
 
         plot.setTime(LocalDateTime.now());
         plot.setSlackUser(ofSlackUser);
         plot.setBtcValue(totalBtcBalance);
+        plot.setCurrencies(currencyBalances.keySet().toArray(new String[0]));
 
         return plot;
+    }
+
+    public String[] getCurrencies() {
+        return currencies;
+    }
+
+    public void setCurrencies(String[] currencies) {
+        this.currencies = currencies;
     }
 
     public LocalDateTime getTime() {

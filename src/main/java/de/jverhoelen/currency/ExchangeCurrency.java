@@ -10,6 +10,26 @@ public enum ExchangeCurrency {
         this.fullName = fullName;
     }
 
+    public static ExchangeCurrency byFullName(String shortName) {
+        for (ExchangeCurrency currency : values()) {
+            if (currency.getFullName().toLowerCase().equals(shortName.toLowerCase())) {
+                return currency;
+            }
+        }
+
+        return null;
+    }
+
+    public static ExchangeCurrency byShortName(String shortName) {
+        for (ExchangeCurrency currency : values()) {
+            if (currency.name().toLowerCase().equals(shortName.toLowerCase())) {
+                return currency;
+            }
+        }
+
+        return null;
+    }
+
     public String getFullName() {
         return fullName;
     }

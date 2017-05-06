@@ -1,11 +1,12 @@
 package de.jverhoelen.ingest;
 
-import de.jverhoelen.config.ConfigurationService;
-import de.jverhoelen.config.TimeFrame;
+import de.jverhoelen.currency.combination.CurrencyCombinationService;
 import de.jverhoelen.currency.plot.CurrencyPlot;
 import de.jverhoelen.currency.plot.Plot;
 import de.jverhoelen.notification.CourseAlteration;
 import de.jverhoelen.notification.currency.CurrencySlackService;
+import de.jverhoelen.timeframe.TimeFrame;
+import de.jverhoelen.timeframe.TimeFrameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,10 @@ public class PoloniexIngestService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PoloniexIngestService.class);
 
     @Autowired
-    private ConfigurationService config;
+    private CurrencyCombinationService currencyCombinations;
+
+    @Autowired
+    private TimeFrameService timeFrames;
 
     @Autowired
     private PlotHistory plotHistory;
@@ -43,27 +47,31 @@ public class PoloniexIngestService {
 
     @Scheduled(fixedRateString = "#{new Double(${fetch.interval.sec} * 1000).intValue()}", initialDelay = 0)
     public void receivePoloniexTicker() {
-        ResponseEntity<HashMap<String, Plot>> entity = getTicker();
+        try {
+            ResponseEntity<HashMap<String, Plot>> entity = getTicker();
 
-        if (entity.getStatusCode().is2xxSuccessful()) {
-            Map<String, Plot> body = entity.getBody();
-            List<TimeFrame> timeFrames = config.getAllTimeFrames();
+            if (entity.getStatusCode().is2xxSuccessful()) {
+                Map<String, Plot> body = entity.getBody();
+                List<TimeFrame> allTimeFrames = timeFrames.getAll();
 
-            config.getAllCurrencyCombinations().stream()
-                    .forEach(combi -> {
-                        CurrencyPlot plot = new CurrencyPlot(combi, body.get(combi.toApiKey()));
-                        plotHistory.add(plot);
+                currencyCombinations.getAll().stream()
+                        .forEach(combi -> {
+                            CurrencyPlot plot = new CurrencyPlot(combi, body.get(combi.toApiKey()));
+                            plotHistory.add(plot);
 
-                        timeFrames.stream().forEach(timeFrame -> {
-                            CourseAlteration courseAlteration = plotHistory.getCourseAlteration(combi, timeFrame.getInMinutes());
+                            allTimeFrames.stream().forEach(timeFrame -> {
+                                CourseAlteration courseAlteration = plotHistory.getCourseAlteration(combi, timeFrame.getInMinutes());
 
-                            if (courseAlteration != null) {
-                                slack.sendCurrencyNews(combi, courseAlteration, timeFrame);
-                            }
+                                if (courseAlteration != null) {
+                                    slack.sendCurrencyNews(combi, courseAlteration, timeFrame);
+                                }
+                            });
                         });
-                    });
-        } else {
-            LOGGER.warn("Non 2xx status code returned! Maybe got blocked?!");
+            } else {
+                LOGGER.warn("Non 2xx status code returned! Maybe got blocked?!");
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Beim Abfragen des Poloniex Tickers, berechnen der Werte oder senden der Alerts ist ein Fehler aufgetreten", ex);
         }
     }
 

@@ -1,7 +1,7 @@
 package de.jverhoelen.notification;
 
 import com.google.common.collect.ImmutableMap;
-import de.jverhoelen.config.TimeFrame;
+import de.jverhoelen.timeframe.TimeFrame;
 
 import java.util.Map;
 

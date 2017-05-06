@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.jverhoelen.trade.Trade;
 import de.jverhoelen.trade.TradeType;
+import de.jverhoelen.interaction.FatalErrorEvent;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -16,6 +17,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
@@ -31,6 +34,9 @@ public class TradeHistoryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TradeHistoryService.class);
     private static final String TRADING_API_URI = "https://poloniex.com/tradingApi";
     private static final String COMMAND = "returnTradeHistory";
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -95,7 +101,7 @@ public class TradeHistoryService {
             return mapper.readValue(resultJson, new TypeReference<Map<String, List<Trade>>>() {
             });
         } catch (Exception e) {
-            LOGGER.error("Retrieval of trade history for an account was not successful", e);
+            eventPublisher.publishEvent(new FatalErrorEvent("Retrieval of trade history for an account was not successful", e));
             return null;
         }
     }

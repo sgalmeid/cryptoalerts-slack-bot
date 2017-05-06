@@ -13,6 +13,7 @@ public class CurrencyCombination {
     private long id;
 
     @Enumerated(value = EnumType.STRING)
+    @Column(unique = true)
     private CryptoCurrency crypto;
 
     @Enumerated(value = EnumType.STRING)

@@ -3,9 +3,7 @@ package de.jverhoelen.notification;
 import com.ullink.slack.simpleslackapi.SlackChannel;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.SlackUser;
-import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory;
-import com.ullink.slack.simpleslackapi.listeners.SlackMessagePostedListener;
-import de.jverhoelen.config.ConfigurationService;
+import de.jverhoelen.currency.combination.CurrencyCombinationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,10 +26,11 @@ public class SlackService {
     @Value("${environment}")
     private String environment;
 
+    @Autowired
     private SlackSession session;
 
     @Autowired
-    private ConfigurationService configurationService;
+    private CurrencyCombinationService currencyCombinations;
 
     @PostConstruct
     public void init() {
@@ -41,7 +39,6 @@ public class SlackService {
                 : "the PROD environment and Slack notifications will be sent as usual";
         LOG.info("Environment {} was detected, so it is {}", environment, environmentResult);
 
-        this.session = createSession();
         joinChannels(getRequiredChannelNames());
     }
 
@@ -73,12 +70,19 @@ public class SlackService {
         }
     }
 
-    public void registerMessagePostedListener(SlackMessagePostedListener listener) {
-        session.addMessagePostedListener(listener);
+    public boolean isMemberOfChannel(String username, String channelName) {
+        SlackUser user = session.findUserByUserName(username);
+        SlackChannel channel = session.findChannelByName(channelName);
+
+        if (user != null && channel != null) {
+            return channel.getMembers().contains(user);
+        }
+
+        throw new RuntimeException("User " + username + " or channel " + channelName + " was not recognized!");
     }
 
     private List<String> getRequiredChannelNames() {
-        List<String> requiredChannelNames = configurationService.getAllCurrencyCombinations().stream()
+        List<String> requiredChannelNames = currencyCombinations.getAll().stream()
                 .map(cc -> cc.getCrypto().getFullName().toLowerCase())
                 .collect(Collectors.toList());
         requiredChannelNames.addAll(Arrays.asList("tages-statistik", "statistiken"));
@@ -89,18 +93,11 @@ public class SlackService {
         channelNames.stream().forEach(channel -> session.joinChannel(channel));
     }
 
-    private SlackSession createSession() {
-        SlackSession session = SlackSessionFactory.createWebSocketSlackSession(botAuthToken);
-        try {
-            session.connect();
-        } catch (IOException e) {
-            LOG.error("Slack session could not be created with token {}", botAuthToken, e);
-        }
-
-        return session;
-    }
-
     private boolean isDevelopmentEnvironment() {
         return environment.toLowerCase().equals("dev");
+    }
+
+    public boolean channelExists(String channelName) {
+        return session.findChannelByName(channelName) != null;
     }
 }

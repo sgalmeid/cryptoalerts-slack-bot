@@ -1,15 +1,14 @@
 package de.jverhoelen.trade.recommendation;
 
-import de.jverhoelen.config.ConfigurationService;
-import de.jverhoelen.config.TimeFrame;
 import de.jverhoelen.currency.combination.CurrencyCombination;
+import de.jverhoelen.currency.combination.CurrencyCombinationService;
 import de.jverhoelen.ingest.PlotHistory;
 import de.jverhoelen.notification.CourseAlteration;
 import de.jverhoelen.notification.SlackService;
+import de.jverhoelen.timeframe.TimeFrame;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ChronoUnit;
@@ -27,7 +26,7 @@ public class TradeRecommendationService {
     private long recommendIntervalSeconds;
 
     @Autowired
-    private ConfigurationService configService;
+    private CurrencyCombinationService currencyCombinations;
 
     @Autowired
     private PlotHistory plotHistory;
@@ -42,7 +41,7 @@ public class TradeRecommendationService {
     public void recommendBuyDecisions() {
         TimeFrame frame = TimeFrame.of(ChronoUnit.MINUTES, TIMEFRAME_MINUTES, 99, 1);
 
-        configService.getAllCurrencyCombinations().stream().forEach(cc -> {
+        currencyCombinations.getAll().stream().forEach(cc -> {
             CourseAlteration alteration = plotHistory.getCourseAlteration(cc, frame.getInMinutes());
 
             if (alteration.evaluatePossibleNotificationReasons(frame).shouldBeNotified()) {

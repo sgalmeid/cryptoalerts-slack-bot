@@ -1,7 +1,9 @@
 package de.jverhoelen.notification;
 
-import de.jverhoelen.config.TimeFrame;
+import de.jverhoelen.timeframe.TimeFrame;
 import de.jverhoelen.currency.plot.Plot;
+
+import static de.jverhoelen.util.Utils.roundSmartly;
 
 public class Growth {
 
@@ -45,7 +47,7 @@ public class Growth {
     }
 
     public String buildCourse(String exchangeName) {
-        return before + " " + exchangeName + " auf " + after + " " + exchangeName;
+        return roundSmartly(before) + " " + exchangeName + " auf " + roundSmartly(after) + " " + exchangeName;
     }
 
     public boolean isNotifiable(TimeFrame within) {
@@ -85,6 +87,6 @@ public class Growth {
     }
 
     public String toString(String exchangeName) {
-        return getRoundPercentage() + " % (" + before + " " + exchangeName + " auf " + after + " " + exchangeName + ")";
+        return getRoundPercentage() + " % (" + roundSmartly(before) + " " + exchangeName + " auf " + roundSmartly(after) + " " + exchangeName + ")";
     }
 }

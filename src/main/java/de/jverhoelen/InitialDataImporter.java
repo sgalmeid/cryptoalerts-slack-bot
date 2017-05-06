@@ -1,7 +1,9 @@
-package de.jverhoelen.config;
+package de.jverhoelen;
 
 import de.jverhoelen.balance.notification.BalanceNotification;
 import de.jverhoelen.balance.notification.BalanceNotificationService;
+import de.jverhoelen.timeframe.TimeFrame;
+import de.jverhoelen.timeframe.TimeFrameService;
 import de.jverhoelen.currency.CryptoCurrency;
 import de.jverhoelen.currency.ExchangeCurrency;
 import de.jverhoelen.currency.combination.CurrencyCombination;
@@ -16,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class ConfigurationService {
+public class InitialDataImporter {
 
     @Autowired
     private TimeFrameService timeFrameService;
@@ -52,7 +54,7 @@ public class ConfigurationService {
     );
 
     @PostConstruct
-    public void init() {
+    public void initializeDataRepositories() {
         if (timeFrameService.isEmpty()) {
             timeFrameService.add(timeFrames);
         }
@@ -66,13 +68,5 @@ public class ConfigurationService {
                     new BalanceNotification("jonas", myApiKey, myApiSecret, true, true, true)
             ));
         }
-    }
-
-    public List<TimeFrame> getAllTimeFrames() {
-        return timeFrameService.getAll();
-    }
-
-    public List<CurrencyCombination> getAllCurrencyCombinations() {
-        return currencyCombinationService.getAll();
     }
 }

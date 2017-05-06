@@ -1,4 +1,7 @@
-package de.jverhoelen.config;
+package de.jverhoelen.timeframe;
+
+import com.google.common.base.MoreObjects;
+
 
 import javax.persistence.*;
 import java.time.temporal.ChronoUnit;
@@ -110,5 +113,16 @@ public class TimeFrame {
         int result = unit != null ? unit.hashCode() : 0;
         result = 31 * result + frame;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("unit", unit)
+                .add("frame", frame)
+                .add("lossThreshold", lossThreshold)
+                .add("gainThreshold", gainThreshold)
+                .toString();
     }
 }

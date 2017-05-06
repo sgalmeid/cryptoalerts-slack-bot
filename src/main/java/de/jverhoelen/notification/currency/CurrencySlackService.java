@@ -1,6 +1,6 @@
 package de.jverhoelen.notification.currency;
 
-import de.jverhoelen.config.TimeFrame;
+import de.jverhoelen.timeframe.TimeFrame;
 import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.notification.CourseAlteration;
 import de.jverhoelen.notification.Growth;
