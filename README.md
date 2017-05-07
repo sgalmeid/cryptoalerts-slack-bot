@@ -5,6 +5,8 @@ Cryptoalerts is a fully configurable Slack bot with the purpose of serving a Sla
 
 Its goal is to support crypto-currency-enthusiastic investors and traders to make decisions about selling and buying and keeping track of their wins and losses.
 
+Unfortunately its messages are currently *only in German*. You want internationalization? [Let's talk about it](https://github.com/jverhoelen/cryptoalerts/issues/1).
+
 
 ### Features
 
@@ -17,9 +19,34 @@ It contains features such as:
 - Proposals for channels to join because there are amounts of a currency in portfolio
 - Selling & buying a currency by in-channel-message
 
-### Pre-requisites
+### Come aboard!
 
-- Operating a Spring Boot application on the internet
+Got some crypto currencies you want to keep track of? Preferably on Poloniex? [Join the Slack team](https://join.slack.com/cryptoalertsteam/shared_invite/MTgwNjIxMDkzMDE1LTE0OTQxMTI3NjQtMTg3NjI5YWM4Zg) – it is free and will be forever.
+
+Why do I share this? [Cryptoalerts](https://cryptoalertsteam.slack.com) started as my idea and fun project to build simple things that help me as much as possible. I started inviting some people for feedback, ideas and their expertise and technical course analysis. I want to continue with this idea and share Cryptoalerts functionality with everyone because I believe in crypto currencies and cryptos profit from more people getting into it. Feel free to share with your mates.
+
+[Invite link](https://join.slack.com/cryptoalertsteam/shared_invite/MTgwNjIxMDkzMDE1LTE0OTQxMTI3NjQtMTg3NjI5YWM4Zg) expired? Just contact me so I will generate a new one or send me your email address for an invite.
+
+### Cool, I'm in. What now?
+
+@greeter should've greet you in #general, also mentioning everything you need to use the capabilities of Slack and Cryptoalerts together.
+
+### Development progress
+
+At the moment Github issues is *not used*, I decided to go for a [Trello board](https://trello.com/b/c9xsCoIt/cryptoalertsteam-slack-com). As I appreciate you as a contributor, I'm open to change that decision again ;-)
+
+### How can I help?
+
+- Contributing (development, feedback, ideas)
+- Voluntary Bitcoin donations (wallet-ID: `1HNkn4FnnuFfGxhTnHT8ijPSxLdM7k22Gi`)
+
+#### Own team setup
+
+What you need:
+
+- Operating a Spring Boot application
 - A slack team with the channels #general, #statistik, #tages-statistik and #admin (closed one, only with admins invited)
 - Adding a custom bot as app so that you have an access token of it
+- Configuring `application.properties` with all needed data, e.g. the admins' Poloniex API credentials 
 
+If you can do that, the rest will be easy for you.
