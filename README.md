@@ -7,7 +7,6 @@ Its goal is to support crypto-currency-enthusiastic investors and traders to mak
 
 Unfortunately its messages are currently *only in German*. You want internationalization? [Let's talk about it](https://github.com/jverhoelen/cryptoalerts/issues/1).
 
-
 ### Features
 
 It contains features such as:
@@ -18,6 +17,8 @@ It contains features such as:
 - Hourly & daily reports on their portfolio (sum of all in BTC, currencies available and for sale)
 - Proposals for channels to join because there are amounts of a currency in portfolio
 - Selling & buying a currency by in-channel-message
+
+Sounds good? Wanna join? Read further (feature screenshots below at "Feature screenshots")
 
 ### Come aboard!
 
@@ -30,6 +31,42 @@ Why do I share this? [Cryptoalerts](https://cryptoalertsteam.slack.com) started 
 ### Cool, I'm in. What now?
 
 @greeter should've greet you in #general, also mentioning everything you need to use the capabilities of Slack and Cryptoalerts together.
+
+### Feature screenshots
+
+
+#### Balance reports
+
+![alt text](misc/img/features/balance-report.png "Balance reports")
+
+#### Course change alerts
+
+![alt text](misc/img/features/course-change-alerts.png "Course change alerts")
+
+#### Crypto channel suggestions
+
+![alt text](misc/img/features/crypto-channel-suggestions.png "Channel suggestions")
+
+#### Adding watched & alerted currencies by command
+
+![alt text](misc/img/features/currencycombination-add.png "Adding currencies from command")
+
+#### Sells and buys notifications
+
+![alt text](misc/img/features/sell-buy-notification.png "Notifications on sold and bought items")
+
+#### 30 min and daily statistics
+
+![alt text](misc/img/features/statistics.png "Statistics")
+
+#### Adding watched timeframes by command
+
+![alt text](misc/img/features/timeframe-add.png "Adding watched timeframes")
+
+#### Adding Poloniex users
+
+![alt text](misc/img/features/user-add.png "Adding users to report balances by DM")
+
 
 ### Development progress
 
