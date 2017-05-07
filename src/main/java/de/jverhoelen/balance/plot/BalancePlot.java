@@ -5,8 +5,13 @@ import de.jverhoelen.balance.Balance;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.time.LocalDateTime;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
 public class BalancePlot {
@@ -18,7 +23,7 @@ public class BalancePlot {
     private LocalDateTime time;
     private String slackUser;
     private double btcValue;
-    private String[] currencies;
+    private Map<String, Double> currencyBalances;
 
     public static BalancePlot from(double totalBtcBalance, String ofSlackUser, Map<String, Balance> currencyBalances) {
         BalancePlot plot = new BalancePlot();
@@ -26,17 +31,26 @@ public class BalancePlot {
         plot.setTime(LocalDateTime.now());
         plot.setSlackUser(ofSlackUser);
         plot.setBtcValue(totalBtcBalance);
-        plot.setCurrencies(currencyBalances.keySet().toArray(new String[0]));
+        plot.setCurrencyBalances(currencyBalances.entrySet()
+                .stream()
+                .map(cb -> new AbstractMap.SimpleEntry<>(cb.getKey(), cb.getValue().getBtcValue()))
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()))
+        );
 
         return plot;
     }
 
-    public String[] getCurrencies() {
-        return currencies;
+    public Map<String, Double> getCurrencyBalances() {
+        return currencyBalances;
     }
 
-    public void setCurrencies(String[] currencies) {
-        this.currencies = currencies;
+    public void setCurrencyBalances(Map<String, Double> currencyBalances) {
+        this.currencyBalances = currencyBalances;
+    }
+
+    @Transient
+    public List<String> getCurrencies() {
+        return new ArrayList<>(currencyBalances.keySet());
     }
 
     public LocalDateTime getTime() {

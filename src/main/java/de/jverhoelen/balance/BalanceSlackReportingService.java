@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -74,7 +73,7 @@ public class BalanceSlackReportingService {
 
         if (now != null) {
             // all currencies the user has some of
-            List<CryptoCurrency> possessingCryptoCurrencies = Arrays.stream(now.getCurrencies())
+            List<CryptoCurrency> possessingCryptoCurrencies = now.getCurrencies().stream()
                     .map(currencyName -> CryptoCurrency.byShortName(currencyName))
                     .filter(cc -> cc != null)
                     .collect(Collectors.toList());

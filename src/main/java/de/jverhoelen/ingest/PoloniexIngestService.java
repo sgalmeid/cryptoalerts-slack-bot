@@ -3,6 +3,7 @@ package de.jverhoelen.ingest;
 import de.jverhoelen.currency.combination.CurrencyCombinationService;
 import de.jverhoelen.currency.plot.CurrencyPlot;
 import de.jverhoelen.currency.plot.Plot;
+import de.jverhoelen.interaction.FatalErrorEvent;
 import de.jverhoelen.notification.CourseAlteration;
 import de.jverhoelen.notification.currency.CurrencySlackService;
 import de.jverhoelen.timeframe.TimeFrame;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -33,6 +35,9 @@ public class PoloniexIngestService {
 
     @Autowired
     private CurrencyCombinationService currencyCombinations;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
     private TimeFrameService timeFrames;
@@ -68,10 +73,10 @@ public class PoloniexIngestService {
                             });
                         });
             } else {
-                LOGGER.warn("Non 2xx status code returned! Maybe got blocked?!");
+                throw new RuntimeException("Non 2xx status code returned! Maybe got blocked?!");
             }
         } catch (Exception ex) {
-            throw new RuntimeException("Beim Abfragen des Poloniex Tickers, berechnen der Werte oder senden der Alerts ist ein Fehler aufgetreten", ex);
+            eventPublisher.publishEvent(new FatalErrorEvent("Beim Abfragen des Poloniex Tickers, berechnen der Werte oder senden der Alerts ist ein Fehler aufgetreten", ex));
         }
     }
 
