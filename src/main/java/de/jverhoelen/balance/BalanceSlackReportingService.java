@@ -143,8 +143,17 @@ public class BalanceSlackReportingService {
         balances.entrySet().stream().forEach(balanceEntry -> {
             Balance b = balanceEntry.getValue();
             String currency = balanceEntry.getKey();
+
+            Growth cryptoGrowth = new Growth(0, 0);
+            if (lastPlot != null) {
+                Double before = lastPlot.getCurrencyBalances().get(currency);
+                if (before != null) {
+                    cryptoGrowth = new Growth(before, b.getBtcValue());
+                }
+            }
+
             builder.append(
-                    "\n&gt; " + b.getRoundedAvailable() + " " + currency + " (" + b.getRoundedBtcValue() + " BTC) + " + b.getRoundedOnOrders() + " in Verkäufen"
+                    "\n&gt; " + b.getRoundedAvailable() + " " + currency + " + " + b.getRoundedOnOrders() + " on Sale ➡️ *" + b.getRoundedBtcValue() + " BTC* (" + cryptoGrowth.getRoundPercentage() + " % " + cryptoGrowth.getActionPerformed() + ")"
             );
         });
 
