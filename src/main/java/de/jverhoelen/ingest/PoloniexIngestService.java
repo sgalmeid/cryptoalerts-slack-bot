@@ -64,21 +64,14 @@ public class PoloniexIngestService {
                 currencyCombinations.getAll().stream()
                         .forEach(combi -> {
                             CurrencyPlot plot = new CurrencyPlot(combi, body.get(combi.toApiKey()));
-                            CurrencyPlot usdtPlot = null;
-
-                            if (!plot.getExchange().equals(ExchangeCurrency.USDT)) {
-                                CurrencyCombination combiWithUsdt = CurrencyCombination.of(combi.getCrypto(), ExchangeCurrency.USDT);
-                                usdtPlot = new CurrencyPlot(combiWithUsdt, body.get(combiWithUsdt.toApiKey()));
-                            }
-
                             plotHistory.add(plot);
 
-                            CurrencyPlot finalUsdtPlot = usdtPlot;
+                            CurrencyPlot usdtPlot = findUsDollarPlot(body, combi, plot);
                             allTimeFrames.stream().forEach(timeFrame -> {
                                 CourseAlteration courseAlteration = plotHistory.getCourseAlteration(combi, timeFrame.getInMinutes());
 
                                 if (courseAlteration != null) {
-                                    slack.sendCurrencyNews(combi, courseAlteration, finalUsdtPlot, timeFrame);
+                                    slack.sendCurrencyNews(combi, courseAlteration, usdtPlot, timeFrame);
                                 }
                             });
                         });
@@ -88,6 +81,21 @@ public class PoloniexIngestService {
         } catch (Exception ex) {
             eventPublisher.publishEvent(new FatalErrorEvent("Beim Abfragen des Poloniex Tickers, berechnen der Werte oder senden der Alerts ist ein Fehler aufgetreten", ex));
         }
+    }
+
+    private CurrencyPlot findUsDollarPlot(Map<String, Plot> plotsPayload, CurrencyCombination regularCombination, CurrencyPlot regularPlot) {
+        CurrencyPlot usDollarPlot = null;
+
+        // set this plot if the exchange of the regular plot is not already USDT
+        if (!regularPlot.getExchange().equals(ExchangeCurrency.USDT)) {
+            CurrencyCombination combiWithUsdt = CurrencyCombination.of(regularCombination.getCrypto(), ExchangeCurrency.USDT);
+            Plot actualPlot = plotsPayload.get(combiWithUsdt.toApiKey());
+            if (actualPlot != null) {
+                usDollarPlot = new CurrencyPlot(combiWithUsdt, actualPlot);
+            }
+        }
+
+        return usDollarPlot;
     }
 
     private ResponseEntity<HashMap<String, Plot>> getTicker() {
