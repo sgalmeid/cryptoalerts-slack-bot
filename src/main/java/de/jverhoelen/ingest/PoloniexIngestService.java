@@ -1,5 +1,7 @@
 package de.jverhoelen.ingest;
 
+import de.jverhoelen.currency.ExchangeCurrency;
+import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.currency.combination.CurrencyCombinationService;
 import de.jverhoelen.currency.plot.CurrencyPlot;
 import de.jverhoelen.currency.plot.Plot;
@@ -62,13 +64,21 @@ public class PoloniexIngestService {
                 currencyCombinations.getAll().stream()
                         .forEach(combi -> {
                             CurrencyPlot plot = new CurrencyPlot(combi, body.get(combi.toApiKey()));
+                            CurrencyPlot usdtPlot = null;
+
+                            if (!plot.getExchange().equals(ExchangeCurrency.USDT)) {
+                                CurrencyCombination combiWithUsdt = CurrencyCombination.of(combi.getCrypto(), ExchangeCurrency.USDT);
+                                usdtPlot = new CurrencyPlot(combiWithUsdt, body.get(combiWithUsdt.toApiKey()));
+                            }
+
                             plotHistory.add(plot);
 
+                            CurrencyPlot finalUsdtPlot = usdtPlot;
                             allTimeFrames.stream().forEach(timeFrame -> {
                                 CourseAlteration courseAlteration = plotHistory.getCourseAlteration(combi, timeFrame.getInMinutes());
 
                                 if (courseAlteration != null) {
-                                    slack.sendCurrencyNews(combi, courseAlteration, timeFrame);
+                                    slack.sendCurrencyNews(combi, courseAlteration, finalUsdtPlot, timeFrame);
                                 }
                             });
                         });

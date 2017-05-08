@@ -31,6 +31,10 @@ public class CurrencyCombination {
         return new CurrencyCombination(crypto, exchange);
     }
 
+    public String toApiKey() {
+        return exchange.name() + "_" + crypto.name();
+    }
+
     public ExchangeCurrency getExchange() {
         return exchange;
     }
@@ -71,9 +75,5 @@ public class CurrencyCombination {
         int result = crypto != null ? crypto.hashCode() : 0;
         result = 31 * result + (exchange != null ? exchange.hashCode() : 0);
         return result;
-    }
-
-    public String toApiKey() {
-        return exchange.name() + "_" + crypto.name();
     }
 }
