@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 public class PlotStatistics {
 
+    // comparator to compare by last currency price
+    private static final Comparator<CurrencyPlot> LAST_PRICE_COMPARATOR = Comparator.comparing(o -> o.getPlot().getLast());
+
     private double min;
     private double max;
     private double average;
@@ -24,12 +27,16 @@ public class PlotStatistics {
             this.average = -1;
             this.courseAlteration = new CourseAlteration(new Growth(0, 0), new Growth(0, 0));
         } else {
-            Comparator<CurrencyPlot> lastPlotComparator = Comparator.comparing(o -> o.getPlot().getLast());
+            // sort entries by time
+            Collections.sort(entries, Comparator.comparing(o -> o.getTime()));
+
+            // all plot values and their sum
             List<Double> plotValues = entries.stream().map(e -> e.getPlot().getLast()).collect(Collectors.toList());
             Double sum = plotValues.stream().mapToDouble(Double::doubleValue).sum();
 
-            CurrencyPlot minPlot = Collections.min(entries, lastPlotComparator);
-            CurrencyPlot maxPlot = Collections.max(entries, lastPlotComparator);
+            // min and max price plot
+            CurrencyPlot minPlot = Collections.min(entries, LAST_PRICE_COMPARATOR);
+            CurrencyPlot maxPlot = Collections.max(entries, LAST_PRICE_COMPARATOR);
 
             this.min = minPlot.getPlot().getLast();
             this.max = maxPlot.getPlot().getLast();

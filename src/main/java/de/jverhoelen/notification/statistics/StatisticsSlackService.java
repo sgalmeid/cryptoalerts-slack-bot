@@ -38,6 +38,7 @@ public class StatisticsSlackService {
 
     @Value("${statistics.interval.minutes}")
     private int intervalMinutes;
+    private int minutesOfADay = 24 * 60;
 
     @Scheduled(fixedRateString = "#{new Double(${statistics.interval.minutes} * 60 * 1000).intValue()}", initialDelay = 180000)
     public void sendRegularStatistics() {
@@ -54,7 +55,6 @@ public class StatisticsSlackService {
     @Scheduled(cron = "0 0 22 * * *")
     public void sendDaySummary() {
         try {
-            int minutesOfADay = 24 * 60;
             Map<CurrencyCombination, PlotStatistics> allStatistics = getCurrencyCombinationStatistics(minutesOfADay);
 
             String message = buildMessage(allStatistics, minutesOfADay);

@@ -35,7 +35,7 @@ public class CleanupService {
         }
     }
 
-    @Scheduled(fixedRate = 180000)
+//    @Scheduled(fixedRate = 180000)
     public void refreshSession() {
         try {
             slackSession.connect();
