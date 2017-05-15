@@ -13,14 +13,14 @@ public class NotificationReasonCheck {
     public NotificationReasonCheck(Map<CourseNotificationEvent, Boolean> notifiablePerSource) {
         this.notifiablePerSource = notifiablePerSource;
 
-        Map<CourseNotificationEvent, Boolean> allNotifiables = notifiablePerSource
+        Map<CourseNotificationEvent, Boolean> allNotifiable = notifiablePerSource
                 .entrySet().stream()
                 .filter(notifiable -> notifiable.getValue())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        if (!allNotifiables.isEmpty()) {
+        if (!allNotifiable.isEmpty()) {
             this.shouldBeNotified = true;
-            this.notificationReason = new ArrayList<>(allNotifiables.keySet()).get(0);
+            this.notificationReason = new ArrayList<>(allNotifiable.keySet()).get(0);
         }
     }
 

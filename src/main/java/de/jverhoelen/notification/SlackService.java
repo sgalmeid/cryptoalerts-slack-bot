@@ -81,7 +81,11 @@ public class SlackService {
         throw new RuntimeException("User " + username + " or channel " + channelName + " was not recognized!");
     }
 
-    private List<String> getRequiredChannelNames() {
+    public boolean channelExists(String channelName) {
+        return session.findChannelByName(channelName) != null;
+    }
+
+    List<String> getRequiredChannelNames() {
         List<String> requiredChannelNames = currencyCombinations.getAll().stream()
                 .map(cc -> cc.getCrypto().getFullName().toLowerCase())
                 .collect(Collectors.toList());
@@ -89,15 +93,11 @@ public class SlackService {
         return requiredChannelNames;
     }
 
-    private void joinChannels(List<String> channelNames) {
+    void joinChannels(List<String> channelNames) {
         channelNames.stream().forEach(channel -> session.joinChannel(channel));
     }
 
-    private boolean isDevelopmentEnvironment() {
+    boolean isDevelopmentEnvironment() {
         return environment.toLowerCase().equals("dev");
-    }
-
-    public boolean channelExists(String channelName) {
-        return session.findChannelByName(channelName) != null;
     }
 }

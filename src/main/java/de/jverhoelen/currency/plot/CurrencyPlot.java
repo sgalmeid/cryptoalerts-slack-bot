@@ -1,5 +1,6 @@
 package de.jverhoelen.currency.plot;
 
+import com.google.common.base.MoreObjects;
 import de.jverhoelen.currency.CryptoCurrency;
 import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.currency.ExchangeCurrency;
@@ -100,5 +101,12 @@ public class CurrencyPlot {
         result = 31 * result + (exchange != null ? exchange.hashCode() : 0);
         result = 31 * result + (currency != null ? currency.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("time", time)
+                .toString();
     }
 }

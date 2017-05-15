@@ -22,14 +22,11 @@ public class PlotStatistics {
 
     public PlotStatistics(List<CurrencyPlot> entries) {
         if (entries.isEmpty()) {
-            this.min = -1;
-            this.max = -1;
-            this.average = -1;
+            this.min = 0;
+            this.max = 0;
+            this.average = 0;
             this.courseAlteration = new CourseAlteration(new Growth(0, 0), new Growth(0, 0));
         } else {
-            // sort entries by time
-            Collections.sort(entries, Comparator.comparing(o -> o.getTime()));
-
             // all plot values and their sum
             List<Double> plotValues = entries.stream().map(e -> e.getPlot().getLast()).collect(Collectors.toList());
             Double sum = plotValues.stream().mapToDouble(Double::doubleValue).sum();
@@ -41,6 +38,9 @@ public class PlotStatistics {
             this.min = minPlot.getPlot().getLast();
             this.max = maxPlot.getPlot().getLast();
             this.average = sum / plotValues.size();
+
+            // sort entries by time
+            entries.sort(Comparator.comparing(o -> o.getTime()));
 
             Plot oldest = entries.get(0).getPlot();
             Plot newest = entries.get(entries.size() - 1).getPlot();

@@ -73,7 +73,7 @@ public class SlackBotCommand {
         return arguments;
     }
 
-    private static boolean isParamsSection(String s) {
+    static boolean isParamsSection(String s) {
         return s.contains("=");
     }
 

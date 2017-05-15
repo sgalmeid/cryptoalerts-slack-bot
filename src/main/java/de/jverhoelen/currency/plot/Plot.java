@@ -13,6 +13,14 @@ public class Plot {
 //    private Double high24hr;
 //    private Double low24hr;
 
+    public Plot(Double last, Double baseVolume) {
+        this.last = last;
+        this.baseVolume = baseVolume;
+    }
+
+    public Plot() {
+    }
+
     public Double getLast() {
         return last;
     }
