@@ -2,10 +2,7 @@ package de.jverhoelen.balance.plot;
 
 import de.jverhoelen.balance.Balance;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -23,6 +20,8 @@ public class BalancePlot {
     private LocalDateTime time;
     private String slackUser;
     private double btcValue;
+
+    @Column(length = 1000)
     private Map<String, Double> currencyBalances;
 
     public static BalancePlot from(double totalBtcBalance, String ofSlackUser, Map<String, Balance> currencyBalances) {

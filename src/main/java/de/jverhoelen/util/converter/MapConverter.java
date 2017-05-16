@@ -15,7 +15,6 @@ public class MapConverter implements AttributeConverter<Map<String, Double>, Str
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-
     @Override
     public String convertToDatabaseColumn(Map<String, Double> stringDoubleMap) {
         try {
