@@ -89,7 +89,7 @@ public class SlackService {
         List<String> requiredChannelNames = currencyCombinations.getAll().stream()
                 .map(cc -> cc.getCrypto().getFullName().toLowerCase())
                 .collect(Collectors.toList());
-        requiredChannelNames.addAll(Arrays.asList("tages-statistik", "statistiken"));
+        requiredChannelNames.addAll(Arrays.asList("tages-statistik", "statistiken", "markt-kapitalisierung"));
         return requiredChannelNames;
     }
 

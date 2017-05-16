@@ -42,6 +42,10 @@ public class Growth {
         }
     }
 
+    public String getPercentagePart() {
+        return percentage + " " + getActionPerformed();
+    }
+
     public String getRoundPercentage() {
         return String.format("%.2f", percentage);
     }

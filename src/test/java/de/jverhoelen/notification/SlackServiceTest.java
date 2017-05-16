@@ -111,8 +111,9 @@ public class SlackServiceTest {
         assertTrue(channelNames.contains("bitcoin"));
         assertTrue(channelNames.contains("statistiken"));
         assertTrue(channelNames.contains("tages-statistik"));
+        assertTrue(channelNames.contains("markt-kapitalisierung"));
         assertTrue(channelNames.contains("bitcoin"));
-        assertThat(channelNames.size(), is(4));
+        assertThat(channelNames.size(), is(5));
     }
 
     @Test
