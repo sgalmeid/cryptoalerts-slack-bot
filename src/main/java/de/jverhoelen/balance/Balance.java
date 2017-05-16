@@ -6,6 +6,15 @@ public class Balance {
     private double onOrders;
     private double btcValue;
 
+    public Balance(double available, double onOrders, double btcValue) {
+        this.available = available;
+        this.onOrders = onOrders;
+        this.btcValue = btcValue;
+    }
+
+    public Balance() {
+    }
+
     public double getAvailable() {
         return available;
     }

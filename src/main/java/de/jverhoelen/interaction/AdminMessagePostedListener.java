@@ -4,11 +4,11 @@ import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.events.SlackMessagePosted;
 import com.ullink.slack.simpleslackapi.listeners.SlackMessagePostedListener;
 import de.jverhoelen.balance.notification.BalanceNotification;
-import de.jverhoelen.timeframe.TimeFrame;
-import de.jverhoelen.notification.SlackService;
-import de.jverhoelen.trade.manual.PoloniexTradeService;
 import de.jverhoelen.balance.notification.BalanceNotificationAddedEvent;
+import de.jverhoelen.notification.SlackService;
+import de.jverhoelen.timeframe.TimeFrame;
 import de.jverhoelen.timeframe.TimeFrameAddedEvent;
+import de.jverhoelen.trade.manual.PoloniexTradeService;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -53,20 +53,22 @@ public class AdminMessagePostedListener implements SlackMessagePostedListener {
         }
     }
 
+    TimeFrame timeFrameFromCommand(SlackBotCommand command) {
+        return TimeFrame.of(
+                ChronoUnit.valueOf(command.getArgument("unit").toUpperCase()),
+                Integer.parseInt(command.getArgument("count")),
+                Double.parseDouble(command.getArgument("treshold")),
+                Double.parseDouble(command.getArgument("treshold"))
+        );
+    }
+
     private void processGeneral(SlackBotCommand command, String channelName, String senderUsername) {
         if ((channelName.equals("general") || channelName.equals("admin")) && senderUsername.equals(adminUsername)) {
             String workResult = "";
 
             if (command.getCommand().equals("timeframe")) {
-                String unit = command.getArgument("unit").toUpperCase();
-
                 if (command.getSubCommand().equals("add")) {
-                    TimeFrame timeFrame = TimeFrame.of(
-                            ChronoUnit.valueOf(unit),
-                            Integer.parseInt(command.getArgument("count")),
-                            Double.parseDouble(command.getArgument("treshold")),
-                            Double.parseDouble(command.getArgument("treshold"))
-                    );
+                    TimeFrame timeFrame = timeFrameFromCommand(command);
                     publisher.publishEvent(new TimeFrameAddedEvent(timeFrame));
                     workResult = "Der neue Zeitinvervall würde hinzugefügt.";
                 }

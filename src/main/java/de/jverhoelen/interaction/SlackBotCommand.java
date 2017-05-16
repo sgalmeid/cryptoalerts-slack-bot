@@ -15,8 +15,11 @@ public class SlackBotCommand {
     private String rawArguments;
 
     public SlackBotCommand(SlackMessagePosted slackMsg) {
-        String content = slackMsg.getMessageContent();
-        String[] split = content.split(" ");
+        this(slackMsg.getMessageContent());
+    }
+
+    public SlackBotCommand(String messagePosted) {
+        String[] split = messagePosted.split(" ");
 
         command = split[0].toLowerCase();
 
