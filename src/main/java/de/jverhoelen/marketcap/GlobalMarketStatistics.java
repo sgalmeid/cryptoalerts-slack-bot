@@ -55,12 +55,20 @@ public class GlobalMarketStatistics {
         return totalMarketCap;
     }
 
+    public String getTotalMarketCapInMillions() {
+        return String.format("%.3f", new Double(totalMarketCap) / 1000000);
+    }
+
     public void setTotalMarketCap(long totalMarketCap) {
         this.totalMarketCap = totalMarketCap;
     }
 
     public long getTotalDayVolume() {
         return totalDayVolume;
+    }
+
+    public String getTotalDayVolumeInMillions() {
+        return String.format("%.3f", new Double(totalDayVolume) / 1000000);
     }
 
     public void setTotalDayVolume(long totalDayVolume) {

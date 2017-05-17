@@ -50,8 +50,8 @@ public class GlobalMarketStatisticsReporter {
     private String buildGrowthMessage(GlobalMarketStatistics stats, GlobalMarketGrowth growths) {
         StringBuilder builder = new StringBuilder("🌎💰 Markt-Kapitalisierung am " + LocalDateTime.now().toString() + ":\n");
 
-        builder.append("\n&gt; Gesamte Markt-Kapitalisierung: " + stats.getTotalMarketCap() + "$" + (growths != null ? (" (" + growths.getTotalCapGrowth().getPercentagePart() + ")") : ""));
-        builder.append("\n&gt; 24h Volumen: " + stats.getTotalDayVolume() + "$" + (growths != null ? (" (" + growths.getDayVolumeGrowth().getPercentagePart() + ")") : ""));
+        builder.append("\n&gt; Gesamte Markt-Kapitalisierung: " + stats.getTotalMarketCapInMillions() + " Millionen $" + (growths != null ? (" (" + growths.getTotalCapGrowth().getPercentagePart() + ")") : ""));
+        builder.append("\n&gt; 24h Volumen: " + stats.getTotalDayVolumeInMillions() + " Millionen $" + (growths != null ? (" (" + growths.getDayVolumeGrowth().getPercentagePart() + ")") : ""));
         builder.append("\n&gt; Bitcoin-Anteil am Markt: " + stats.getBitcoinPercentageOfCap() + "%" + (growths != null ? (" (" + growths.getBitcoinCapGrowth().getPercentagePart() + ")") : ""));
         builder.append("\n&gt; " + stats.getActiveCurrencies() + " aktive Krypto-Währungen" + (growths != null ? (" (" + growths.getActiveCurrenciesGrowth().getPercentagePart() + ")") : ""));
         builder.append("\n&gt; " + stats.getActiveMarkets() + " aktive Märkte" + (growths != null ? (" (" + growths.getActiveMarketsGrowth().getPercentagePart() + ")") : ""));
