@@ -4,13 +4,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity
 public class GlobalMarketStatistics {
 
     @Id
-    private String date;
+    @GeneratedValue
+    private long id;
+
+    private LocalDateTime date;
 
     @JsonProperty("total_market_cap_usd")
     private long totalMarketCap;
@@ -30,11 +35,19 @@ public class GlobalMarketStatistics {
     @JsonProperty("active_markets")
     private long activeMarkets;
 
-    public String getDate() {
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

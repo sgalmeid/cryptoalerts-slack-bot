@@ -43,7 +43,7 @@ public class Growth {
     }
 
     public String getPercentagePart() {
-        return percentage + " " + getActionPerformed();
+        return getRoundPercentage() + " " + getActionPerformed();
     }
 
     public String getRoundPercentage() {

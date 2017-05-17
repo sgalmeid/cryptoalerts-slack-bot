@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 public class CoinMarketCapClient {
@@ -17,7 +17,7 @@ public class CoinMarketCapClient {
 
         if (result.getStatusCode().is2xxSuccessful()) {
             GlobalMarketStatistics stats = result.getBody();
-            stats.setDate(LocalDate.now().toString());
+            stats.setDate(LocalDateTime.now());
             return stats;
         } else {
             throw new Exception();

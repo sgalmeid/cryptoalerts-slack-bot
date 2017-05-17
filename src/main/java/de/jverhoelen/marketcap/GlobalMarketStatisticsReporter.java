@@ -7,7 +7,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -25,11 +24,11 @@ public class GlobalMarketStatisticsReporter {
     @Autowired
     private GlobalMarketStatisticsService statisticsService;
 
-    @Scheduled(cron = "0 0 10 * * *")
+    @Scheduled(cron = "0 0 3,9,16,23 * * *")
     public void reportMarketChanges() {
         try {
             GlobalMarketStatistics currentStats = client.getGlobalStatistics();
-            GlobalMarketStatistics yesterdaysStats = statisticsService.get(LocalDate.now().minusDays(1).toString());
+            GlobalMarketStatistics yesterdaysStats = statisticsService.getLast();
 
             GlobalMarketGrowth totalGrowth = null;
 
