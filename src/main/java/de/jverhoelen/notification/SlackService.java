@@ -48,7 +48,7 @@ public class SlackService {
         if (user != null) {
             LOG.info("Send message {} to username {}", message, username);
 
-            if (!isDevelopmentEnvironment() || true) {
+            if (!isDevelopmentEnvironment()) {
                 session.sendMessageToUser(user, message, null);
             }
         } else {
