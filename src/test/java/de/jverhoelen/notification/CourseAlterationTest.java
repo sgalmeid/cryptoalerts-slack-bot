@@ -17,8 +17,9 @@ public class CourseAlterationTest {
 
         Growth growth = Growth.fromLast(new Plot(300.0, 0.0), new Plot(900.0, 0.0));
         Growth volumeGrowth = Growth.fromBaseVolumes(new Plot(0.0, 300.0), new Plot(0.0, 600.0));
+        Growth marketCapGrowth = Growth.fromMarketCap(new Plot(0.0, 300.0), new Plot(0.0, 600.0));
 
-        CourseAlteration alteration = new CourseAlteration(growth, volumeGrowth);
+        CourseAlteration alteration = new CourseAlteration(growth, volumeGrowth, marketCapGrowth);
         NotificationReasonCheck reasons = alteration.evaluatePossibleNotificationReasons(timeFrame);
 
         assertTrue(reasons.isShouldBeNotified());

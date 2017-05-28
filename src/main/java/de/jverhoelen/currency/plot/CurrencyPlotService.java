@@ -30,8 +30,8 @@ public class CurrencyPlotService extends AbstractRepositoryService<CurrencyPlot,
     }
 
     public CurrencyPlot getPlotClosestTo(LocalDateTime time, CurrencyCombination combination) {
-        LocalDateTime lowerLimit = time.minusSeconds(20);
-        LocalDateTime higherLimit = time.plusSeconds(20);
+        LocalDateTime lowerLimit = time.minusSeconds(25);
+        LocalDateTime higherLimit = time.plusSeconds(25);
         List<CurrencyPlot> allCandidates = repository.findByTimeBetweenAndCurrencyAndExchangeOrderByTimeDesc(lowerLimit, higherLimit, combination.getCrypto(), combination.getExchange());
 
         if (allCandidates.isEmpty()) {
@@ -39,9 +39,5 @@ public class CurrencyPlotService extends AbstractRepositoryService<CurrencyPlot,
         }
 
         return allCandidates.get(0);
-    }
-
-    public CurrencyPlot getPlot(LocalDateTime time, CurrencyCombination combination) {
-        return repository.getByTimeAndCurrencyAndExchange(time, combination.getExchange(), combination.getCrypto());
     }
 }

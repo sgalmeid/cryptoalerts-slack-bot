@@ -24,16 +24,16 @@ public class GlobalMarketStatisticsReporter {
     @Autowired
     private GlobalMarketStatisticsService statisticsService;
 
-    @Scheduled(cron = "0 0 3,9,16,23 * * *")
+    @Scheduled(cron = "0 0 */3 * * *")
     public void reportMarketChanges() {
         try {
             GlobalMarketStatistics currentStats = client.getGlobalStatistics();
-            GlobalMarketStatistics yesterdaysStats = statisticsService.getLast();
+            GlobalMarketStatistics previousStats = statisticsService.getLast();
 
             GlobalMarketGrowth totalGrowth = null;
 
-            if (yesterdaysStats != null) {
-                totalGrowth = new GlobalMarketGrowth(currentStats, yesterdaysStats);
+            if (previousStats != null) {
+                totalGrowth = new GlobalMarketGrowth(currentStats, previousStats);
             }
 
             String message = buildGrowthMessage(currentStats, totalGrowth);
@@ -48,7 +48,7 @@ public class GlobalMarketStatisticsReporter {
     }
 
     private String buildGrowthMessage(GlobalMarketStatistics stats, GlobalMarketGrowth growths) {
-        StringBuilder builder = new StringBuilder("🌎💰 Markt-Kapitalisierung am " + LocalDateTime.now().toString() + ":\n");
+        StringBuilder builder = new StringBuilder("🌎💰 Markt-Kapitalisierung:\n");
 
         builder.append("\n&gt; Gesamte Markt-Kapitalisierung: " + stats.getTotalMarketCapInMillions() + " Millionen $" + (growths != null ? (" (" + growths.getTotalCapGrowth().getPercentagePart() + ")") : ""));
         builder.append("\n&gt; 24h Volumen: " + stats.getTotalDayVolumeInMillions() + " Millionen $" + (growths != null ? (" (" + growths.getDayVolumeGrowth().getPercentagePart() + ")") : ""));

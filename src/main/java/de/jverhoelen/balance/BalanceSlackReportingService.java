@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ public class BalanceSlackReportingService {
     private PoloniexBalanceService balanceService;
 
     @Autowired
-    private SlackService slackService;
+    private SlackService slack;
 
     @Autowired
     private BalanceNotificationService notificationService;
@@ -64,12 +65,12 @@ public class BalanceSlackReportingService {
             persistBalancePlot(person, totalBitcoins, balancesOverZero);
 
             String message = buildDailyReportMessage(balancesOverZero, totalBitcoins, oneDayBefore);
-            slackService.sendUserMessage(person.getSlackUser(), message);
+            slack.sendUserMessage(person.getSlackUser(), message);
         }
     }
 
     private void suggestChannelsFor(BalanceNotification person) {
-        BalancePlot now = balancePlotService.getFromMinutesAgo(person.getSlackUser(), 0);
+        BalancePlot now = balancePlotService.getNextToLast(person.getSlackUser());
 
         if (now != null) {
             // all currencies the user has some of
@@ -78,24 +79,43 @@ public class BalanceSlackReportingService {
                     .filter(cc -> cc != null)
                     .collect(Collectors.toList());
 
+            List<CryptoCurrency> notPossessingCryptoCurrencies = Arrays.stream(CryptoCurrency.values())
+                    .filter(cc -> !possessingCryptoCurrencies.contains(cc))
+                    .collect(Collectors.toList());
+
             // all currencies he has but is no member of the channel
             List<CryptoCurrency> currenciesWhereNotChannelMember = possessingCryptoCurrencies.stream()
                     .filter(possessedCc -> {
                         String channelName = possessedCc.getFullName().toLowerCase();
-                        return slackService.channelExists(channelName) && !slackService.isMemberOfChannel(person.getSlackUser(), channelName);
+                        return slack.channelExists(channelName) && !slack.isMemberOfChannel(person.getSlackUser(), channelName);
                     })
                     .collect(Collectors.toList());
 
-            if (!currenciesWhereNotChannelMember.isEmpty()) {
-                StringBuilder builder = new StringBuilder("\uD83D\uDCA1 Wie wäre es mit *Channel-Vorschlägen*?");
+            // all currencies he does NOT have but is member of the channel
+            List<CryptoCurrency> currenciesWhereMemberButNotPossessing = notPossessingCryptoCurrencies.stream()
+                    .filter(cc -> !cc.equals(CryptoCurrency.BTC))
+                    .filter(notPossessedCc -> {
+                        String channelName = notPossessedCc.getFullName().toLowerCase();
+                        return slack.channelExists(channelName) && slack.isMemberOfChannel(person.getSlackUser(), channelName);
+                    })
+                    .collect(Collectors.toList());
+
+            if (!currenciesWhereNotChannelMember.isEmpty() || !currenciesWhereMemberButNotPossessing.isEmpty()) {
+                StringBuilder builder = new StringBuilder("\uD83D\uDCA1 Wie wäre es mit *Channel-Vorschlägen*");
 
                 currenciesWhereNotChannelMember.stream().forEach(cc -> {
-                    builder.append("\n&gt; Du besitzt " + cc.name() + ", bist aber nicht in #" + cc.getFullName().toLowerCase());
+                    builder.append("\n&gt; Du besitzt " + cc.name() + ", bist aber nicht in " + slack.getFormattedChannelLink(cc.getFullName().toLowerCase()));
                 });
 
-                builder.append("\n\n...gern geschehen \uD83D\uDE09");
+                if (!currenciesWhereMemberButNotPossessing.isEmpty() && !currenciesWhereNotChannelMember.isEmpty()) {
+                    builder.append("\n");
+                }
 
-                slackService.sendUserMessage(person.getSlackUser(), builder.toString());
+                currenciesWhereMemberButNotPossessing.stream().forEach(cc -> {
+                    builder.append("\n&gt; Du bist in  " + slack.getFormattedChannelLink(cc.getFullName().toLowerCase()) + ", besitzt aber keine " + cc.name());
+                });
+
+                slack.sendUserMessage(person.getSlackUser(), builder.toString());
             }
         }
     }
@@ -122,12 +142,12 @@ public class BalanceSlackReportingService {
     private void reportFor(BalanceNotification person) {
         Map<String, Balance> balancesOverZero = getBalancesOverZero(person);
         double totalBitcoins = balanceService.getBtcSumOfBalances(balancesOverZero);
-        BalancePlot lastPlot = balancePlotService.getFromMinutesAgo(person.getSlackUser(), reportingRateMinutes);
+        BalancePlot lastPlot = balancePlotService.getLast(person.getSlackUser());
 
         persistBalancePlot(person, totalBitcoins, balancesOverZero);
 
         String message = buildMessage(balancesOverZero, totalBitcoins, lastPlot);
-        slackService.sendUserMessage(person.getSlackUser(), message);
+        slack.sendUserMessage(person.getSlackUser(), message);
     }
 
     private String buildMessage(Map<String, Balance> balances, double totalBitcoins, BalancePlot lastPlot) {
@@ -153,7 +173,7 @@ public class BalanceSlackReportingService {
             }
 
             builder.append(
-                    "\n&gt; " + b.getRoundedAvailable() + " " + currency + " + " + b.getRoundedOnOrders() + " on Sale ➡️ *" + b.getRoundedBtcValue() + " BTC* (" + cryptoGrowth.getRoundPercentage() + " % " + cryptoGrowth.getActionPerformed() + ")"
+                    "\n&gt; " + b.getRoundedAvailable() + " *" + currency + "* + " + b.getRoundedOnOrders() + " on Sale =️ *" + b.getRoundedBtcValue() + " BTC* (" + cryptoGrowth.getRoundPercentage() + " % " + cryptoGrowth.getActionPerformed() + ")"
             );
         });
 

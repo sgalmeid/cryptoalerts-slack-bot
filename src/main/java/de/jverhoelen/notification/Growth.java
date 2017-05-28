@@ -24,6 +24,10 @@ public class Growth {
         this.actionPerformed = createActionPerformed(percentage);
     }
 
+    public static Growth fromMarketCap(Plot before, Plot after) {
+        return new Growth(before == null ? 0 : before.getMarketCap(), after == null ? 0 : after.getMarketCap());
+    }
+
     public static Growth fromBaseVolumes(Plot before, Plot after) {
         return new Growth(before == null ? 0 : before.getBaseVolume(), after == null ? 0 : after.getBaseVolume());
     }

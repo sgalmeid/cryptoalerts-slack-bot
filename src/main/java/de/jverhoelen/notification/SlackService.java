@@ -56,6 +56,14 @@ public class SlackService {
         }
     }
 
+    public String getChannelId(String channelName) {
+        return session.findChannelByName(channelName).getId();
+    }
+
+    public String getFormattedChannelLink(String channelName) {
+        return "<#" + getChannelId(channelName) + "|" + channelName + ">";
+    }
+
     public void sendChannelMessage(String channelName, String message) {
         SlackChannel channel = session.findChannelByName(channelName);
 

@@ -2,8 +2,9 @@ package de.jverhoelen.currency.plot;
 
 import com.google.common.base.MoreObjects;
 import de.jverhoelen.currency.CryptoCurrency;
-import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.currency.ExchangeCurrency;
+import de.jverhoelen.currency.combination.CurrencyCombination;
+import de.jverhoelen.marketcap.CurrencyMarketStatistics;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -37,6 +38,12 @@ public class CurrencyPlot {
     }
 
     public CurrencyPlot() {
+    }
+
+    public void registerMarketCapitalization(CurrencyMarketStatistics stats) {
+        if (stats != null) {
+            plot.setMarketCap(stats.getMarketCapUsd());
+        }
     }
 
     public CurrencyCombination combination() {

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,15 @@ public class PlotHistory {
                 marketVolumeGrowth = new Growth(0, 0);
             }
 
-            return new CourseAlteration(growth, marketVolumeGrowth);
+            Growth marketCapGrowth;
+            if (be.getMarketCap() != null && afterPlot.getMarketCap() != null) {
+                marketCapGrowth = Growth.fromMarketCap(be, afterPlot);
+            }
+             else {
+                marketCapGrowth = new Growth(0, 0);
+            }
+
+            return new CourseAlteration(growth, marketVolumeGrowth, marketCapGrowth);
         }
 
         return null;

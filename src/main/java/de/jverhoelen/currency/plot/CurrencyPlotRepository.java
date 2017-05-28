@@ -16,16 +16,6 @@ public interface CurrencyPlotRepository extends Repository<CurrencyPlot, Long> {
     @Modifying
     void deleteByTimeBefore(LocalDateTime time);
 
-    @Query(value =
-            "SELECT * \n" +
-                    "FROM currency_plot c \n" +
-                    "WHERE c.time >= ?1 AND exchange = ?2 AND currency = ?3 \n" +
-                    "ORDER BY c.time DESC\n" +
-                    "LIMIT 1",
-            nativeQuery = true
-    )
-    CurrencyPlot getByTimeAndCurrencyAndExchange(LocalDateTime time, ExchangeCurrency exchange, CryptoCurrency currency);
-
     List<CurrencyPlot> findByCurrencyAndExchangeAndTimeAfterOrderByTimeDesc(CryptoCurrency currency, ExchangeCurrency exchange, LocalDateTime time);
 
     List<CurrencyPlot> findByTimeBetweenAndCurrencyAndExchangeOrderByTimeDesc(LocalDateTime lowerLimit, LocalDateTime higherLimit, CryptoCurrency currency, ExchangeCurrency exchange);

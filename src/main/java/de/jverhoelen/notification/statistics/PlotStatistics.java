@@ -25,7 +25,7 @@ public class PlotStatistics {
             this.min = 0;
             this.max = 0;
             this.average = 0;
-            this.courseAlteration = new CourseAlteration(new Growth(0, 0), new Growth(0, 0));
+            this.courseAlteration = new CourseAlteration(new Growth(0, 0), new Growth(0, 0), new Growth(0, 0));
         } else {
             // all plot values and their sum
             List<Double> plotValues = entries.stream().map(e -> e.getPlot().getLast()).collect(Collectors.toList());
@@ -47,7 +47,9 @@ public class PlotStatistics {
 
             Growth growth = Growth.fromLast(oldest, newest);
             Growth marketVolumeGrowth = Growth.fromBaseVolumes(oldest, newest);
-            this.courseAlteration = new CourseAlteration(growth, marketVolumeGrowth);
+            Growth marketCapGrowth = Growth.fromMarketCap(oldest, newest);
+
+            this.courseAlteration = new CourseAlteration(growth, marketVolumeGrowth, marketCapGrowth);
         }
     }
 
