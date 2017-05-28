@@ -9,10 +9,12 @@ public class CourseAlteration {
 
     private Growth growth;
     private Growth marketVolumeGrowth;
+    private Growth marketCapGrowth;
 
-    public CourseAlteration(Growth growth, Growth marketVolumeGrowth) {
+    public CourseAlteration(Growth growth, Growth marketVolumeGrowth, Growth marketCapGrowth) {
         this.growth = growth;
         this.marketVolumeGrowth = marketVolumeGrowth;
+        this.marketCapGrowth = marketCapGrowth;
     }
 
     public Growth getMarketVolumeGrowth() {
@@ -31,10 +33,17 @@ public class CourseAlteration {
         this.growth = growth;
     }
 
+    public Growth getMarketCapGrowth() {
+        return marketCapGrowth;
+    }
+
+    public void setMarketCapGrowth(Growth marketCapGrowth) {
+        this.marketCapGrowth = marketCapGrowth;
+    }
+
     public NotificationReasonCheck evaluatePossibleNotificationReasons(TimeFrame within) {
         Map<CourseNotificationEvent, Boolean> notifiablePerSource = ImmutableMap.
                 <CourseNotificationEvent, Boolean>builder()
-//                .put(CourseNotificationEvent.MARKET_VOLUME, marketVolumeGrowth.isNotifiable(within))
                 .put(CourseNotificationEvent.PRICE, growth.isNotifiable(within))
                 .build();
 

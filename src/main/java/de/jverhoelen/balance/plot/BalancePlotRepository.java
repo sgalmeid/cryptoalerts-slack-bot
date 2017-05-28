@@ -10,4 +10,8 @@ import java.util.List;
 public interface BalancePlotRepository extends Repository<BalancePlot, Long> {
 
     List<BalancePlot> findBySlackUserAndTimeBetween(String slackUser, LocalDateTime from, LocalDateTime to);
+
+    List<BalancePlot> findTop2BySlackUserOrderByTimeDesc(String slackUser);
+
+    BalancePlot findTopBySlackUserOrderByTimeDesc(String slackUser);
 }

@@ -48,12 +48,20 @@ public class SlackService {
         if (user != null) {
             LOG.info("Send message {} to username {}", message, username);
 
-            if (!isDevelopmentEnvironment()) {
+            if (!isDevelopmentEnvironment() || true) {
                 session.sendMessageToUser(user, message, null);
             }
         } else {
             throw new RuntimeException("User " + username + " was not recognized!");
         }
+    }
+
+    public String getChannelId(String channelName) {
+        return session.findChannelByName(channelName).getId();
+    }
+
+    public String getFormattedChannelLink(String channelName) {
+        return "<#" + getChannelId(channelName) + "|" + channelName + ">";
     }
 
     public void sendChannelMessage(String channelName, String message) {

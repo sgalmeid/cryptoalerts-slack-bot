@@ -11,13 +11,13 @@ public class GlobalMarketGrowth {
     private Growth activeAssetsGrowth;
     private Growth activeMarketsGrowth;
 
-    public GlobalMarketGrowth(GlobalMarketStatistics now, GlobalMarketStatistics yesterday) {
-        totalCapGrowth = new Growth(now.getTotalMarketCap(), yesterday.getTotalMarketCap());
-        dayVolumeGrowth = new Growth(now.getTotalDayVolume(), yesterday.getTotalDayVolume());
-        bitcoinCapGrowth = new Growth(now.getBitcoinPercentageOfCap(), yesterday.getBitcoinPercentageOfCap());
-        activeCurrenciesGrowth = new Growth(now.getActiveCurrencies(), yesterday.getActiveCurrencies());
-        activeAssetsGrowth = new Growth(now.getActiveAssets(), yesterday.getActiveAssets());
-        activeMarketsGrowth = new Growth(now.getActiveMarkets(), yesterday.getActiveMarkets());
+    public GlobalMarketGrowth(GlobalMarketStatistics now, GlobalMarketStatistics previous) {
+        totalCapGrowth = new Growth(previous.getTotalMarketCap(), now.getTotalMarketCap());
+        dayVolumeGrowth = new Growth(previous.getTotalDayVolume(), now.getTotalDayVolume());
+        bitcoinCapGrowth = new Growth(previous.getBitcoinPercentageOfCap(), now.getBitcoinPercentageOfCap());
+        activeCurrenciesGrowth = new Growth(previous.getActiveCurrencies(), now.getActiveCurrencies());
+        activeAssetsGrowth = new Growth(previous.getActiveAssets(), now.getActiveAssets());
+        activeMarketsGrowth = new Growth(previous.getActiveMarkets(), now.getActiveMarkets());
     }
 
     public Growth getTotalCapGrowth() {

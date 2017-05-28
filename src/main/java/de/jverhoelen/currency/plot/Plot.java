@@ -4,18 +4,16 @@ public class Plot {
 
     private Double last;
     private Double baseVolume;
+    private Double marketCap;
 
-//    private Double lowestAsk;
-//    private Double highestBid;
-//    private Double percentChange;
-//    private Double quoteVolume;
-//    private Double isFrozen;
-//    private Double high24hr;
-//    private Double low24hr;
-
-    public Plot(Double last, Double baseVolume) {
+    public Plot(Double last, Double baseVolume, Double marketCap) {
         this.last = last;
         this.baseVolume = baseVolume;
+        this.marketCap = marketCap;
+    }
+
+    public Plot(Double last, Double baseVolume) {
+        this(last, baseVolume, 0.0);
     }
 
     public Plot() {
@@ -37,60 +35,11 @@ public class Plot {
         this.baseVolume = baseVolume;
     }
 
-//    public Double getLowestAsk() {
-//        return lowestAsk;
-//    }
-//
-//    public void setLowestAsk(Double lowestAsk) {
-//        this.lowestAsk = lowestAsk;
-//    }
-//
-//    public Double getHighestBid() {
-//        return highestBid;
-//    }
-//
-//    public void setHighestBid(Double highestBid) {
-//        this.highestBid = highestBid;
-//    }
-//
-//    public Double getPercentChange() {
-//        return percentChange;
-//    }
-//
-//    public void setPercentChange(Double percentChange) {
-//        this.percentChange = percentChange;
-//    }
-//
-//
-//    public Double getQuoteVolume() {
-//        return quoteVolume;
-//    }
-//
-//    public void setQuoteVolume(Double quoteVolume) {
-//        this.quoteVolume = quoteVolume;
-//    }
-//
-//    public Double getIsFrozen() {
-//        return isFrozen;
-//    }
-//
-//    public void setIsFrozen(Double isFrozen) {
-//        this.isFrozen = isFrozen;
-//    }
-//
-//    public Double getHigh24hr() {
-//        return high24hr;
-//    }
-//
-//    public void setHigh24hr(Double high24hr) {
-//        this.high24hr = high24hr;
-//    }
-//
-//    public Double getLow24hr() {
-//        return low24hr;
-//    }
-//
-//    public void setLow24hr(Double low24hr) {
-//        this.low24hr = low24hr;
-//    }
+    public Double getMarketCap() {
+        return marketCap;
+    }
+
+    public void setMarketCap(Double marketCap) {
+        this.marketCap = marketCap;
+    }
 }
