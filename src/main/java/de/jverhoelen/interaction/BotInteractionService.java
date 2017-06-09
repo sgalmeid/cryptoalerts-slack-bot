@@ -39,5 +39,6 @@ public class BotInteractionService {
         slackSession.addMessagePostedListener(new SellBuyMessagePostedListener(balanceNotifications, tradeService, slackService));
         slackSession.addMessagePostedListener(new AdminMessagePostedListener(tradeService, slackService, adminUsername, publisher));
         slackSession.addMessagePostedListener(new CurrencyCombinationRequestPostedListener(publisher));
+        slackSession.addMessagePostedListener(new DMFeatureToggleRequestPostedListener(publisher, slackService));
     }
 }

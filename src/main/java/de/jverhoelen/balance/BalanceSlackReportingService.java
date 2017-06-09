@@ -42,7 +42,7 @@ public class BalanceSlackReportingService {
     @Autowired
     private CurrencyPlotService currencyPlotService;
 
-    @Scheduled(fixedRateString = "#{new Double(${report.balance.interval.min} * 60 * 1000).intValue()}")
+    @Scheduled(fixedRateString = "#{new Double(${report.balance.interval.min} * 60 * 1000).intValue()}", initialDelay = (60 * 1000 * 3))
     public void reportToAll() {
         CurrencyPlot btcDollar = currencyPlotService.findLastOf(CurrencyCombination.of(CryptoCurrency.BTC, ExchangeCurrency.USDT));
 
@@ -53,12 +53,6 @@ public class BalanceSlackReportingService {
                     }
                     if (person.isReportChannels()) {
                         suggestChannelsFor(person);
-                    }
-
-                    try {
-                        Thread.sleep(15000L);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
                 });
     }
