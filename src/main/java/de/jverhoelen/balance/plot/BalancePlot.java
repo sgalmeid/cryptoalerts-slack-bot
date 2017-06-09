@@ -19,16 +19,18 @@ public class BalancePlot {
 
     private LocalDateTime time;
     private String slackUser;
+    private String ownerName;
     private double btcValue;
 
     @Column(length = 1000)
     private Map<String, Double> currencyBalances;
 
-    public static BalancePlot from(double totalBtcBalance, String ofSlackUser, Map<String, Balance> currencyBalances) {
+    public static BalancePlot from(double totalBtcBalance, String slackUser, String ownerName, Map<String, Balance> currencyBalances) {
         BalancePlot plot = new BalancePlot();
 
         plot.setTime(LocalDateTime.now());
-        plot.setSlackUser(ofSlackUser);
+        plot.setSlackUser(slackUser);
+        plot.setOwnerName(ownerName);
         plot.setBtcValue(totalBtcBalance);
         plot.setCurrencyBalances(currencyBalances.entrySet()
                 .stream()
@@ -84,6 +86,14 @@ public class BalancePlot {
         this.btcValue = btcValue;
     }
 
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -92,13 +102,15 @@ public class BalancePlot {
         BalancePlot that = (BalancePlot) o;
 
         if (time != null ? !time.equals(that.time) : that.time != null) return false;
-        return slackUser != null ? slackUser.equals(that.slackUser) : that.slackUser == null;
+        if (slackUser != null ? !slackUser.equals(that.slackUser) : that.slackUser != null) return false;
+        return ownerName != null ? ownerName.equals(that.ownerName) : that.ownerName == null;
     }
 
     @Override
     public int hashCode() {
         int result = time != null ? time.hashCode() : 0;
         result = 31 * result + (slackUser != null ? slackUser.hashCode() : 0);
+        result = 31 * result + (ownerName != null ? ownerName.hashCode() : 0);
         return result;
     }
 }

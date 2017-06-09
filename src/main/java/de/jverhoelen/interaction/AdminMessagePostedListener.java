@@ -11,6 +11,7 @@ import de.jverhoelen.timeframe.TimeFrameAddedEvent;
 import de.jverhoelen.trade.manual.PoloniexTradeService;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.util.StringUtils;
 
 import java.time.temporal.ChronoUnit;
 
@@ -45,8 +46,10 @@ public class AdminMessagePostedListener implements SlackMessagePostedListener {
 
             if (command.getCommand().equals("adduser")) {
                 String username = command.getArgument("user");
+                String ownerParam = command.getArgument("owner");
+                String owner = StringUtils.isEmpty(ownerParam) ? username : ownerParam;
 
-                BalanceNotification balanceNotification = new BalanceNotification(username, command.getArgument("key"), command.getArgument("secret"), true, true, true);
+                BalanceNotification balanceNotification = new BalanceNotification(username, owner, command.getArgument("key"), command.getArgument("secret"), true, true, true);
                 publisher.publishEvent(new BalanceNotificationAddedEvent(balanceNotification));
                 slack.sendChannelMessage(channelName, "Die API Credentials von @" + username + " wurden hinterlegt.");
             }

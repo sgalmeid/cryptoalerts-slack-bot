@@ -10,7 +10,7 @@ public class BalanceNotificationService extends AbstractRepositoryService<Balanc
     @Autowired
     private BalanceNotificationRepository repository;
 
-    public BalanceNotification getBySlackUser(String name) {
-        return repository.findBySlackUser(name);
+    public BalanceNotification getBySlackUserAndOwner(String name, String owner) {
+        return repository.findBySlackUserAndOwnerName(name, owner);
     }
 }

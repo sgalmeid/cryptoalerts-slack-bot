@@ -31,7 +31,7 @@ public class SellBuyMessagePostedListener implements SlackMessagePostedListener 
         SlackBotCommand cmd = new SlackBotCommand(slackMessagePosted);
 
         if (currency != null) {
-            BalanceNotification notificationSettings = balanceNotifications.getBySlackUser(sender.getUserName());
+            BalanceNotification notificationSettings = balanceNotifications.getBySlackUserAndOwner(sender.getUserName(), sender.getUserName());
 
             if (notificationSettings != null) {
 

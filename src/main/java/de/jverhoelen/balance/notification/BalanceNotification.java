@@ -12,6 +12,7 @@ public class BalanceNotification {
     private long id;
 
     private String slackUser;
+    private String ownerName;
     private String apiKey;
     private String secretKey;
 
@@ -19,8 +20,9 @@ public class BalanceNotification {
     private boolean reportSells;
     private boolean reportBalance;
 
-    public BalanceNotification(String slackUser, String apiKey, String secretKey, boolean reportBuys, boolean reportSells, boolean reportBalance) {
+    public BalanceNotification(String slackUser, String ownerName, String apiKey, String secretKey, boolean reportBuys, boolean reportSells, boolean reportBalance) {
         this.slackUser = slackUser;
+        this.ownerName = ownerName;
         this.apiKey = apiKey;
         this.secretKey = secretKey;
         this.reportBuys = reportBuys;
@@ -85,5 +87,13 @@ public class BalanceNotification {
 
     public void setReportBalance(boolean reportBalance) {
         this.reportBalance = reportBalance;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 }

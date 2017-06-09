@@ -65,7 +65,7 @@ public class InitialDataImporter {
 
         if (balanceNotificationService.isEmpty()) {
             balanceNotificationService.add(Arrays.asList(
-                    new BalanceNotification("jonas", myApiKey, myApiSecret, true, true, true)
+                    new BalanceNotification("jonas", "jonas", myApiKey, myApiSecret, true, true, true)
             ));
         }
     }

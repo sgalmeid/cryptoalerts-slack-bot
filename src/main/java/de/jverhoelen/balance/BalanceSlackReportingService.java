@@ -188,10 +188,12 @@ public class BalanceSlackReportingService {
     }
 
     private Map<String, Balance> filterOutEmpties(Map<String, Balance> balances) {
-        return balances.entrySet().stream().filter(balance -> balance.getValue().getBtcValue() > 0).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        return balances.entrySet().stream()
+                .filter(balance -> balance.getValue().getBtcValue() > 0)
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 
     private void persistBalancePlot(BalanceNotification person, double totalBitcoins, Map<String, Balance> currencyBalances) {
-        balancePlotService.add(BalancePlot.from(totalBitcoins, person.getSlackUser(), currencyBalances));
+        balancePlotService.add(BalancePlot.from(totalBitcoins, person.getSlackUser(), person.getOwnerName(), currencyBalances));
     }
 }

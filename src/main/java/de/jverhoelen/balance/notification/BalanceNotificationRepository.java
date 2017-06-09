@@ -6,5 +6,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface BalanceNotificationRepository extends Repository<BalanceNotification, Long> {
 
-    BalanceNotification findBySlackUser(String slackUser);
+    BalanceNotification findBySlackUserAndOwnerName(String slackUser, String owner);
 }
