@@ -5,6 +5,10 @@ import de.jverhoelen.balance.notification.BalanceNotificationService;
 import de.jverhoelen.balance.plot.BalancePlot;
 import de.jverhoelen.balance.plot.BalancePlotService;
 import de.jverhoelen.currency.CryptoCurrency;
+import de.jverhoelen.currency.ExchangeCurrency;
+import de.jverhoelen.currency.combination.CurrencyCombination;
+import de.jverhoelen.currency.plot.CurrencyPlot;
+import de.jverhoelen.currency.plot.CurrencyPlotService;
 import de.jverhoelen.notification.Growth;
 import de.jverhoelen.notification.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +23,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class BalanceSlackReportingService {
-
-    private static final int MINUTES_OF_A_DAY = 24 * 60;
 
     @Value("${report.balance.interval.min}")
     private int reportingRateMinutes;
@@ -37,40 +39,43 @@ public class BalanceSlackReportingService {
     @Autowired
     private BalancePlotService balancePlotService;
 
+    @Autowired
+    private CurrencyPlotService currencyPlotService;
+
     @Scheduled(fixedRateString = "#{new Double(${report.balance.interval.min} * 60 * 1000).intValue()}")
     public void reportToAll() {
+        CurrencyPlot btcDollar = currencyPlotService.findLastOf(CurrencyCombination.of(CryptoCurrency.BTC, ExchangeCurrency.USDT));
+
         notificationService.getAll().stream()
                 .forEach(person -> {
-                    reportFor(person);
-                    suggestChannelsFor(person);
+                    if (person.isReportBalance()) {
+                        reportFor(person, btcDollar);
+                    }
+                    if (person.isReportChannels()) {
+                        suggestChannelsFor(person);
+                    }
+
+                    try {
+                        Thread.sleep(15000L);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 });
     }
 
-    @Scheduled(cron = "0 0 22 * * *")
-    public void reportDailyGrowthToAll() {
-        notificationService.getAll().stream()
-                .filter(person -> person.isReportBalance())
-                .forEach(person -> {
-                    reportDailyFor(person);
-                    suggestChannelsFor(person);
-                });
-    }
+    private void reportFor(BalanceNotification person, CurrencyPlot btcDollar) {
+        Map<String, Balance> balancesOverZero = getBalancesOverZero(person);
+        double totalBtc = balanceService.getBtcSumOfBalances(balancesOverZero);
+        BalancePlot lastPlot = balancePlotService.getLast(person.getSlackUser(), person.getOwnerName());
 
-    private void reportDailyFor(BalanceNotification person) {
-        BalancePlot oneDayBefore = balancePlotService.getFromMinutesAgo(person.getSlackUser(), MINUTES_OF_A_DAY);
+        persistBalancePlot(person, totalBtc, balancesOverZero);
 
-        if (oneDayBefore != null) {
-            Map<String, Balance> balancesOverZero = getBalancesOverZero(person);
-            double totalBitcoins = balanceService.getBtcSumOfBalances(balancesOverZero);
-            persistBalancePlot(person, totalBitcoins, balancesOverZero);
-
-            String message = buildDailyReportMessage(balancesOverZero, totalBitcoins, oneDayBefore);
-            slack.sendUserMessage(person.getSlackUser(), message);
-        }
+        String message = buildMessage(balancesOverZero, totalBtc, lastPlot, person.getOwnerName(), btcDollar);
+        slack.sendUserMessage(person.getSlackUser(), message);
     }
 
     private void suggestChannelsFor(BalanceNotification person) {
-        BalancePlot now = balancePlotService.getNextToLast(person.getSlackUser());
+        BalancePlot now = balancePlotService.getNextToLast(person.getSlackUser(), person.getOwnerName());
 
         if (now != null) {
             // all currencies the user has some of
@@ -120,44 +125,15 @@ public class BalanceSlackReportingService {
         }
     }
 
-    private String buildDailyReportMessage(Map<String, Balance> balances, double totalBitcoins, BalancePlot yesterdayPlot) {
-        Growth btcGrowth = new Growth(yesterdayPlot.getBtcValue(), totalBitcoins);
-
-        StringBuilder builder = new StringBuilder("⏰ *Tagesreport*");
-
-        builder.append("\nDein aktuelles Poloniex Guthaben beträgt *" + String.format("%.3f", totalBitcoins) + "* BTC");
-        builder.append("\nDas sind " + btcGrowth.getRoundPercentage() + " % " + btcGrowth.getActionPerformed() + ") im Vergleich zu gestern");
-
-        balances.entrySet().stream().forEach(balanceEntry -> {
-            Balance b = balanceEntry.getValue();
-            String currency = balanceEntry.getKey();
-            builder.append(
-                    "\n&gt; " + b.getRoundedAvailable() + " " + currency + " (" + b.getRoundedBtcValue() + " BTC) + " + b.getRoundedOnOrders() + " in Verkäufen"
-            );
-        });
-
-        return builder.toString();
-    }
-
-    private void reportFor(BalanceNotification person) {
-        Map<String, Balance> balancesOverZero = getBalancesOverZero(person);
-        double totalBitcoins = balanceService.getBtcSumOfBalances(balancesOverZero);
-        BalancePlot lastPlot = balancePlotService.getLast(person.getSlackUser());
-
-        persistBalancePlot(person, totalBitcoins, balancesOverZero);
-
-        String message = buildMessage(balancesOverZero, totalBitcoins, lastPlot);
-        slack.sendUserMessage(person.getSlackUser(), message);
-    }
-
-    private String buildMessage(Map<String, Balance> balances, double totalBitcoins, BalancePlot lastPlot) {
+    private String buildMessage(Map<String, Balance> balances, double totalBtc, BalancePlot lastPlot, String owner, CurrencyPlot btcDollar) {
+        long totalDollars = new Double(totalBtc * btcDollar.getPlot().getLast()).longValue();
         Growth btcGrowth = new Growth(0, 0);
         if (lastPlot != null) {
-            btcGrowth = new Growth(lastPlot.getBtcValue(), totalBitcoins);
+            btcGrowth = new Growth(lastPlot.getBtcValue(), totalBtc);
         }
 
         StringBuilder builder = new StringBuilder(
-                "Dein aktuelles Poloniex Guthaben beträgt *" + String.format("%.3f", totalBitcoins) + "* BTC (" + btcGrowth.getRoundPercentage() + " % " + btcGrowth.getActionPerformed() + ")"
+                "Das Poloniex Guthaben für *" + owner + "* beträgt *" + String.format("%.3f", totalBtc) + "* BTC oder *" + String.format("%,d", totalDollars) + "* $ (" + btcGrowth.getRoundPercentage() + " % " + btcGrowth.getActionPerformed() + ")"
         );
 
         balances.entrySet().stream().forEach(balanceEntry -> {

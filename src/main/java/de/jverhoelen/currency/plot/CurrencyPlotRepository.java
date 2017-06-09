@@ -16,6 +16,8 @@ public interface CurrencyPlotRepository extends Repository<CurrencyPlot, Long> {
     @Modifying
     void deleteByTimeBefore(LocalDateTime time);
 
+    CurrencyPlot findTopByCurrencyAndExchangeOrderByTimeDesc(CryptoCurrency currency, ExchangeCurrency exchange);
+
     List<CurrencyPlot> findByCurrencyAndExchangeAndTimeAfterOrderByTimeDesc(CryptoCurrency currency, ExchangeCurrency exchange, LocalDateTime time);
 
     List<CurrencyPlot> findByTimeBetweenAndCurrencyAndExchangeOrderByTimeDesc(LocalDateTime lowerLimit, LocalDateTime higherLimit, CryptoCurrency currency, ExchangeCurrency exchange);

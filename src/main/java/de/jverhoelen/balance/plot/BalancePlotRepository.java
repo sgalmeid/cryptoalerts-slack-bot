@@ -11,7 +11,7 @@ public interface BalancePlotRepository extends Repository<BalancePlot, Long> {
 
     List<BalancePlot> findBySlackUserAndTimeBetween(String slackUser, LocalDateTime from, LocalDateTime to);
 
-    List<BalancePlot> findTop2BySlackUserOrderByTimeDesc(String slackUser);
+    List<BalancePlot> findTop2BySlackUserAndOwnerNameOrderByTimeDesc(String slackUser, String ownerName);
 
-    BalancePlot findTopBySlackUserOrderByTimeDesc(String slackUser);
+    BalancePlot findTopBySlackUserAndOwnerNameOrderByTimeDesc(String slackUser, String owner);
 }

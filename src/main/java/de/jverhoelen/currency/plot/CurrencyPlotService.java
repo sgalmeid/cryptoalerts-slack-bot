@@ -40,4 +40,8 @@ public class CurrencyPlotService extends AbstractRepositoryService<CurrencyPlot,
 
         return allCandidates.get(0);
     }
+
+    public CurrencyPlot findLastOf(CurrencyCombination combination) {
+        return repository.findTopByCurrencyAndExchangeOrderByTimeDesc(combination.getCrypto(), combination.getExchange());
+    }
 }

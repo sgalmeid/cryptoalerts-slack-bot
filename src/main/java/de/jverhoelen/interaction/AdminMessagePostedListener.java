@@ -49,7 +49,7 @@ public class AdminMessagePostedListener implements SlackMessagePostedListener {
                 String ownerParam = command.getArgument("owner");
                 String owner = StringUtils.isEmpty(ownerParam) ? username : ownerParam;
 
-                BalanceNotification balanceNotification = new BalanceNotification(username, owner, command.getArgument("key"), command.getArgument("secret"), true, true, true);
+                BalanceNotification balanceNotification = new BalanceNotification(username, owner, command.getArgument("key"), command.getArgument("secret"), true, true, true, true);
                 publisher.publishEvent(new BalanceNotificationAddedEvent(balanceNotification));
                 slack.sendChannelMessage(channelName, "Die API Credentials von @" + username + " wurden hinterlegt.");
             }

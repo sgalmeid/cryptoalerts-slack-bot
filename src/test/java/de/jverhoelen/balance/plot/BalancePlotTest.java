@@ -20,7 +20,7 @@ public class BalancePlotTest {
                 .put("ETH", new Balance(40.0, 0.0, 5120.0))
                 .build();
 
-        BalancePlot plot = BalancePlot.from(30.0, "johannes", currencyBalances);
+        BalancePlot plot = BalancePlot.from(30.0, "johannes", "johannes", currencyBalances);
 
         assertThat(plot.getBtcValue(), is(30.0));
         assertThat(plot.getCurrencyBalances().get("LTC"), is(36.0));

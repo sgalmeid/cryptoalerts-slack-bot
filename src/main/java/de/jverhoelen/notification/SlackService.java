@@ -42,6 +42,10 @@ public class SlackService {
         joinChannels(getRequiredChannelNames());
     }
 
+    public void refreshSlackSession() {
+        session.refetchUsers();
+    }
+
     public void sendUserMessage(String username, String message) {
         SlackUser user = session.findUserByUserName(username);
 

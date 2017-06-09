@@ -27,12 +27,12 @@ public class BalancePlotService extends AbstractRepositoryService<BalancePlot, L
         return allChoices.get(0);
     }
 
-    public BalancePlot getLast(String slackUser) {
-        return repository.findTopBySlackUserOrderByTimeDesc(slackUser);
+    public BalancePlot getLast(String slackUser, String owner) {
+        return repository.findTopBySlackUserAndOwnerNameOrderByTimeDesc(slackUser, owner);
     }
 
-    public BalancePlot getNextToLast(String slackUser) {
-        List<BalancePlot> plots = repository.findTop2BySlackUserOrderByTimeDesc(slackUser);
+    public BalancePlot getNextToLast(String slackUser, String ownerName) {
+        List<BalancePlot> plots = repository.findTop2BySlackUserAndOwnerNameOrderByTimeDesc(slackUser, ownerName);
 
         if (plots.isEmpty()) {
             return null;

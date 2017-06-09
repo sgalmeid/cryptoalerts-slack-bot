@@ -43,7 +43,7 @@ public class PoloniexBalanceService {
     }
 
     public Map<String, Balance> getBalancesOf(String apiKey, String secretKey) {
-        threadSleep(1000);
+        threadSleep(2000);
 
         try {
             String nonce = String.valueOf(System.currentTimeMillis());
