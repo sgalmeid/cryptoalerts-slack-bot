@@ -19,6 +19,7 @@ public enum CryptoCurrency {
     STEEM("STEEM"),
     STRAT("Stratis"),
     STR("Stellar"),
+    XLM("StellarLumens"),
     SYS("Syscoin"),
     XVC("Vcash"),
     XMP("Primecoin"),
@@ -99,5 +100,13 @@ public enum CryptoCurrency {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public CryptoCurrency getMarketCapName() {
+        if (this.equals(STR)) {
+            return CryptoCurrency.XLM;
+        }
+
+        return this;
     }
 }

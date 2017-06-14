@@ -89,7 +89,7 @@ public class PoloniexIngestService {
 
     private void compareAndReport(Map<String, Plot> body, List<TimeFrame> allTimeFrames, CurrencyCombination combi, Map<CryptoCurrency, CurrencyMarketStatistics> marketCaps) {
         CurrencyPlot plot = new CurrencyPlot(combi, body.get(combi.toApiKey()));
-        plot.registerMarketCapitalization(marketCaps.get(combi.getCrypto()));
+        plot.registerMarketCapitalization(marketCaps.get(combi.getCrypto().getMarketCapName()));
         plotHistory.add(plot);
 
         CurrencyPlot usdtPlot = findUsDollarPlot(body, combi, plot);

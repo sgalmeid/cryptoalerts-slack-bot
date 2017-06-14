@@ -42,7 +42,7 @@ public class PoloniexBalanceService {
                 .reduce(0.0, Double::sum);
     }
 
-    public Map<String, Balance> getBalancesOf(String apiKey, String secretKey) {
+    public Map<String, Balance> getBalancesOf(String apiKey, String secretKey) throws Exception {
         threadSleep(2000);
 
         try {
@@ -74,7 +74,7 @@ public class PoloniexBalanceService {
         } catch (Exception e) {
             String errorMsg = "Something went wrong while getting balances from Poloniex for an account";
             eventPublisher.publishEvent(new FatalErrorEvent(errorMsg, e));
-            return null;
+            throw new Exception();
         }
     }
 }

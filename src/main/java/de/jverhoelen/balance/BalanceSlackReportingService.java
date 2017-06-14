@@ -9,10 +9,12 @@ import de.jverhoelen.currency.ExchangeCurrency;
 import de.jverhoelen.currency.combination.CurrencyCombination;
 import de.jverhoelen.currency.plot.CurrencyPlot;
 import de.jverhoelen.currency.plot.CurrencyPlotService;
+import de.jverhoelen.interaction.FatalErrorEvent;
 import de.jverhoelen.notification.Growth;
 import de.jverhoelen.notification.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,9 @@ public class BalanceSlackReportingService {
     @Autowired
     private CurrencyPlotService currencyPlotService;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     @Scheduled(fixedRateString = "#{new Double(${report.balance.interval.min} * 60 * 1000).intValue()}", initialDelay = (60 * 1000 * 3))
     public void reportToAll() {
         CurrencyPlot btcDollar = currencyPlotService.findLastOf(CurrencyCombination.of(CryptoCurrency.BTC, ExchangeCurrency.USDT));
@@ -58,14 +63,18 @@ public class BalanceSlackReportingService {
     }
 
     private void reportFor(BalanceNotification person, CurrencyPlot btcDollar) {
-        Map<String, Balance> balancesOverZero = getBalancesOverZero(person);
-        double totalBtc = balanceService.getBtcSumOfBalances(balancesOverZero);
-        BalancePlot lastPlot = balancePlotService.getLast(person.getSlackUser(), person.getOwnerName());
+        try {
+            Map<String, Balance> balancesOverZero = getBalancesOverZero(person);
+            double totalBtc = balanceService.getBtcSumOfBalances(balancesOverZero);
+            BalancePlot lastPlot = balancePlotService.getLast(person.getSlackUser(), person.getOwnerName());
 
-        persistBalancePlot(person, totalBtc, balancesOverZero);
+            persistBalancePlot(person, totalBtc, balancesOverZero);
 
-        String message = buildMessage(balancesOverZero, totalBtc, lastPlot, person.getOwnerName(), btcDollar);
-        slack.sendUserMessage(person.getSlackUser(), message);
+            String message = buildMessage(balancesOverZero, totalBtc, lastPlot, person.getOwnerName(), btcDollar);
+            slack.sendUserMessage(person.getSlackUser(), message);
+        } catch (Exception e) {
+            eventPublisher.publishEvent(new FatalErrorEvent("Balance for " + person.getSlackUser() + "/" + person.getOwnerName() + " could not be fetched or reported"));
+        }
     }
 
     private void suggestChannelsFor(BalanceNotification person) {
@@ -152,7 +161,7 @@ public class BalanceSlackReportingService {
         return builder.toString();
     }
 
-    private Map<String, Balance> getBalancesOverZero(BalanceNotification person) {
+    private Map<String, Balance> getBalancesOverZero(BalanceNotification person) throws Exception {
         Map<String, Balance> balances = balanceService.getBalancesOf(person.getApiKey(), person.getSecretKey());
         return filterOutEmpties(balances);
     }
