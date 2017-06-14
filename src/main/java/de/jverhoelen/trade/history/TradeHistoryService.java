@@ -2,9 +2,9 @@ package de.jverhoelen.trade.history;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.jverhoelen.interaction.FatalErrorEvent;
 import de.jverhoelen.trade.Trade;
 import de.jverhoelen.trade.TradeType;
-import de.jverhoelen.interaction.FatalErrorEvent;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -15,8 +15,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -31,7 +29,6 @@ import static de.jverhoelen.util.Utils.threadSleep;
 @Service
 public class TradeHistoryService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TradeHistoryService.class);
     private static final String TRADING_API_URI = "https://poloniex.com/tradingApi";
     private static final String COMMAND = "returnTradeHistory";
 
@@ -40,16 +37,8 @@ public class TradeHistoryService {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    public Map<String, List<Trade>> getBuyHistoryOf(String apiKey, String secretKey, int timeFrameMinutes) {
-        return getTradeHistoryOf(apiKey, secretKey, timeFrameMinutes, TradeType.buy);
-    }
-
-    public Map<String, List<Trade>> getSellHistoryOf(String apiKey, String secretKey, int timeFrameMinutes) {
-        return getTradeHistoryOf(apiKey, secretKey, timeFrameMinutes, TradeType.sell);
-    }
-
-    private Map<String, List<Trade>> getTradeHistoryOf(String apiKey, String secretKey, int timeFrameMinutes, TradeType type) {
-        return getTradeHistoryOf(apiKey, secretKey, timeFrameMinutes)
+    public Map<String, List<Trade>> filterHistoryByType(Map<String, List<Trade>> history, TradeType type) {
+        return history
                 .entrySet().stream()
                 .map(currencyCombi -> {
                     List<Trade> filteredTrades = currencyCombi.getValue().stream()
@@ -62,7 +51,7 @@ public class TradeHistoryService {
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 
-    private Map<String, List<Trade>> getTradeHistoryOf(String apiKey, String secretKey, int timeFrameMinutes) {
+    public Map<String, List<Trade>> getTradeHistoryOf(String apiKey, String secretKey, int timeFrameMinutes) throws Exception {
         threadSleep(1000);
 
         long currentUnixTimestamp = System.currentTimeMillis() / 1000;
@@ -102,7 +91,7 @@ public class TradeHistoryService {
             });
         } catch (Exception e) {
             eventPublisher.publishEvent(new FatalErrorEvent("Retrieval of trade history for an account was not successful", e));
-            return null;
+            throw new Exception();
         }
     }
 }

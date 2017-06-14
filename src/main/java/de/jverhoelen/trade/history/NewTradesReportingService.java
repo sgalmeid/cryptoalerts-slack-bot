@@ -2,10 +2,10 @@ package de.jverhoelen.trade.history;
 
 import de.jverhoelen.balance.notification.BalanceNotification;
 import de.jverhoelen.balance.notification.BalanceNotificationService;
+import de.jverhoelen.interaction.FatalErrorEvent;
 import de.jverhoelen.notification.SlackService;
 import de.jverhoelen.trade.Trade;
 import de.jverhoelen.trade.TradeType;
-import de.jverhoelen.interaction.FatalErrorEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static de.jverhoelen.util.Utils.roundSmartly;
@@ -39,32 +38,32 @@ public class NewTradesReportingService {
 
     @Scheduled(fixedRateString = "#{new Double(${report.trades.interval.min} * 60 * 1000).intValue()}")
     public void reportNewTrades() {
-        try {
-            List<BalanceNotification> toNotify = balanceNotificationService.getAll();
+        List<BalanceNotification> toNotify = balanceNotificationService.getAll();
 
-            Predicate<BalanceNotification> shouldBeNotifiedOnSell = person -> person.isReportSells();
-            toNotify.stream()
-                    .filter(shouldBeNotifiedOnSell)
-                    .forEach(n -> {
-                        Map<String, List<Trade>> sellHistory = tradeHistory.getSellHistoryOf(n.getApiKey(), n.getSecretKey(), intervalMinutes);
-                        if (!sellHistory.isEmpty()) {
-                            String message = buildNewTradeMessage(sellHistory, TradeType.sell);
-                            slack.sendUserMessage(n.getSlackUser(), message);
-                        }
-                    });
+        toNotify.stream()
+                .filter(p -> p.isReportBuys() || p.isReportSells())
+                .forEach(n -> {
+                    try {
+                        Map<String, List<Trade>> usersTradeHistory = tradeHistory.getTradeHistoryOf(n.getApiKey(), n.getSecretKey(), intervalMinutes);
 
-            toNotify.stream()
-                    .filter(person -> person.isReportBuys())
-                    .forEach(n -> {
-                        Map<String, List<Trade>> buyHistory = tradeHistory.getBuyHistoryOf(n.getApiKey(), n.getSecretKey(), intervalMinutes);
-                        if (!buyHistory.isEmpty()) {
-                            String message = buildNewTradeMessage(buyHistory, TradeType.buy);
-                            slack.sendUserMessage(n.getSlackUser(), message);
+                        if (!usersTradeHistory.isEmpty()) {
+                            Map<String, List<Trade>> buys = tradeHistory.filterHistoryByType(usersTradeHistory, TradeType.buy);
+                            Map<String, List<Trade>> sells = tradeHistory.filterHistoryByType(usersTradeHistory, TradeType.sell);
+
+                            if (!buys.isEmpty()) {
+                                String message = buildNewTradeMessage(buys, TradeType.buy);
+                                slack.sendUserMessage(n.getSlackUser(), message);
+                            }
+
+                            if (!sells.isEmpty()) {
+                                String message = buildNewTradeMessage(sells, TradeType.buy);
+                                slack.sendUserMessage(n.getSlackUser(), message);
+                            }
                         }
-                    });
-        } catch (Exception ex) {
-            eventPublisher.publishEvent(new FatalErrorEvent("Beim abholen der Buy/Sell History oder reporten dieser ist ein Fehler aufgetreten", ex));
-        }
+                    } catch (Exception e) {
+                        eventPublisher.publishEvent(new FatalErrorEvent("Beim abholen der Buy/Sell History für " + n.getSlackUser() + "/" + n.getOwnerName() + " ist ein Fehler aufgetreten", e));
+                    }
+                });
     }
 
     private String buildNewTradeMessage(Map<String, List<Trade>> sellHistory, TradeType tradeType) {
